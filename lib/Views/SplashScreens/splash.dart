@@ -161,7 +161,8 @@ class _SplashState extends State<Splash> {
                         width: MediaQuery.of(context).size.width,
                         height: 40,
                         alignment: Alignment.center,
-                        child: GradientText(
+                        child: 
+                        GradientText(
                           'Sign In',
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Views/SplashScreens/splash.dart';
+import 'package:smart_health/getstarted.dart';
 import 'widgets/theme.dart';
 
 void main() {
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         primaryColorDark: Color.fromRGBO(65, 65, 67, 1),
       ),
       // home: StartIntro(),
-      home: Splash(),
+      home: GetStarted(),
     );
   }
 }

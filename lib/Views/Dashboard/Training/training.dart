@@ -98,7 +98,8 @@ class _TrainingState extends State<Training> {
                     ),
                     height: sy(170),
                     width: double.infinity,
-                    child: PageView.builder(
+                    child: 
+                    PageView.builder(
                       allowImplicitScrolling: true,
                       physics: BouncingScrollPhysics(),
                       itemCount: 5,

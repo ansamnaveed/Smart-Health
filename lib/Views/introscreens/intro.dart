@@ -49,10 +49,11 @@ class _IntroScreenState extends State<IntroScreen> {
                   }),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: sy(30)),
+                  padding: EdgeInsets.symmetric(vertical: sy(10)),
                   child: Center(
-                    child: InkWell(
-                      onTap: () {
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(elevation: 0),
+                      onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => SignUp(),

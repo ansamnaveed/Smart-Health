@@ -90,7 +90,8 @@ class _EndIntroState extends State<EndIntro> {
                           bottomIndex = 2;
                         });
                       },
-                      icon: Icon(
+                      icon: 
+                      Icon(
                         LineariconsFree.heart_pulse,
                         color: bottomIndex == 2
                             ? Color.fromRGBO(239, 65, 54, .75)

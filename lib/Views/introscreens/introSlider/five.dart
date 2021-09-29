@@ -24,7 +24,7 @@ class _FiveState extends State<Five> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '5 of 6',
+              '5 of 7',
               style: TextStyle(
                 color: Color.fromRGBO(65, 65, 67, 0.5),
               ),

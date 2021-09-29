@@ -116,7 +116,8 @@ class _SignInState extends State<SignIn> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Container(
+                      child: 
+                      Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(30),

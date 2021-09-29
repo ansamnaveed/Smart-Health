@@ -24,7 +24,7 @@ class _FourState extends State<Four> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '4 of 6',
+                '4 of 7',
                 style: TextStyle(
                   color: Color.fromRGBO(65, 65, 67, 0.5),
                 ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:relative_scale/relative_scale.dart';
 
@@ -24,7 +23,7 @@ class _TwoState extends State<Two> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '2 of 6',
+                '2 of 7',
                 style: TextStyle(
                   color: Color.fromRGBO(65, 65, 67, 0.5),
                 ),
@@ -67,26 +66,30 @@ class _TwoState extends State<Two> {
                         child: Column(
                           children: [
                             IconButton(
-                              iconSize: sy(36),
-                              onPressed: () {
-                                if (isSelected2 == true) {
-                                  isSelected2 = false;
-                                }
-                                if (isSelected1 == false) {
-                                  setState(() {
-                                    isSelected1 = true;
-                                  });
-                                } else if (isSelected1 == true) {
-                                  setState(() {
-                                    isSelected1 = false;
-                                  });
-                                }
-                              },
-                              icon: Icon(FontAwesome.male,
-                                  color: isSelected1 == false
-                                      ? Color.fromRGBO(239, 66, 54, .75)
-                                      : Colors.white),
-                            ),
+                                iconSize: sy(36),
+                                onPressed: () {
+                                  if (isSelected2 == true) {
+                                    isSelected2 = false;
+                                  }
+                                  if (isSelected1 == false) {
+                                    setState(() {
+                                      isSelected1 = true;
+                                    });
+                                  } else if (isSelected1 == true) {
+                                    setState(() {
+                                      isSelected1 = false;
+                                    });
+                                  }
+                                },
+                                icon: Text(
+                                  '👦🏻',
+                                  style: TextStyle(fontSize: 30),
+                                )
+                                // Icon(FontAwesome.male,
+                                //     color: isSelected1 == false
+                                //         ? Color.fromRGBO(239, 66, 54, .75)
+                                //         : Colors.white),
+                                ),
                             Text(
                               'Male',
                               style: TextStyle(
@@ -127,10 +130,11 @@ class _TwoState extends State<Two> {
                                   });
                                 }
                               },
-                              icon: Icon(FontAwesome.female,
-                                  color: isSelected2 == false
-                                      ? Color.fromRGBO(239, 66, 54, .75)
-                                      : Colors.white),
+                              icon: Text('👩🏻', style: TextStyle(fontSize: 30)
+                                  // color: isSelected2 == false
+                                  //     ? Color.fromRGBO(239, 66, 54, .75)
+                                  //     : Colors.white),
+                                  ),
                             ),
                             Text(
                               'Female',

@@ -22,7 +22,7 @@ class _ThreeState extends State<Three> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '3 of 6',
+              '3 of 7',
               style: TextStyle(
                 color: Color.fromRGBO(65, 65, 67, 0.5),
               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:smart_health/Views/SignUpScreens/signup.dart';
+import 'package:smart_health/Views/introscreens/introSlider/eight.dart';
 import 'package:smart_health/Views/introscreens/introSlider/five.dart';
 import 'package:smart_health/Views/introscreens/introSlider/four.dart';
 import 'package:smart_health/Views/introscreens/introSlider/one.dart';
@@ -8,6 +9,7 @@ import 'package:smart_health/Views/introscreens/introSlider/three.dart';
 import 'package:smart_health/Views/introscreens/introSlider/two.dart';
 import 'package:smart_health/widgets/theme.dart';
 
+import 'introSlider/seven.dart';
 import 'introSlider/six.dart';
 
 class StartIntro extends StatefulWidget {
@@ -40,7 +42,11 @@ class _StartIntroState extends State<StartIntro> {
                             ? Five()
                             : bottomIndex == 5
                                 ? Six()
-                                : Container,
+                                : bottomIndex == 6
+                                    ? Seven()
+                                    : bottomIndex == 7
+                                        ? Eight()
+                                        : Container,
       ),
       bottomNavigationBar: Container(
         width: MediaQuery.of(context).size.width,
@@ -65,73 +71,68 @@ class _StartIntroState extends State<StartIntro> {
           child: BottomAppBar(
             color: Colors.white,
             elevation: 5,
-            child: Padding(
-              padding: EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  bottomIndex == 0
-                      ? Container(
-                          width: 0,
-                          height: 0,
-                        )
-                      : IconButton(
-                          onPressed: () {
-                            setState(() {
-                              bottomIndex = bottomIndex - 1;
-                            });
-                          },
-                          icon: Icon(Icons.arrow_back_rounded),
-                        ),
-                  bottomIndex == 5
-                      ? InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => SignUp(),
-                              ),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: GradientText(
-                              'Done',
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: <Color>[
-                                  Color.fromRGBO(65, 65, 67, 1),
-                                  Color.fromRGBO(239, 66, 54, 1),
-                                ],
-                              ),
-                              style: TextStyle(fontWeight: FontWeight.bold),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                bottomIndex == 0
+                    ? Container(
+                        width: 0,
+                        height: 0,
+                      )
+                    : IconButton(
+                        onPressed: () {
+                          setState(() {
+                            bottomIndex = bottomIndex - 1;
+                          });
+                        },
+                        icon: Icon(Icons.arrow_back_rounded),
+                      ),
+                bottomIndex == 7
+                    ? ElevatedButton(
+                        style: ElevatedButton.styleFrom(elevation: 0),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => SignUp(),
                             ),
+                          );
+                        },
+                        child: GradientText(
+                          'Done',
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: <Color>[
+                              Color.fromRGBO(65, 65, 67, 1),
+                              Color.fromRGBO(239, 66, 54, 1),
+                            ],
                           ),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                bottomIndex = bottomIndex + 1;
-                              });
-                            },
-                            child: GradientText(
-                              'Continue',
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: <Color>[
-                                  Color.fromRGBO(65, 65, 67, 1),
-                                  Color.fromRGBO(239, 66, 54, 1),
-                                ],
-                              ),
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                ],
-              ),
+                      )
+                    : ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 0,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            bottomIndex = bottomIndex + 1;
+                          });
+                        },
+                        child: GradientText(
+                          'Continue',
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: <Color>[
+                              Color.fromRGBO(65, 65, 67, 1),
+                              Color.fromRGBO(239, 66, 54, 1),
+                            ],
+                          ),
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+              ],
             ),
           ),
         ),

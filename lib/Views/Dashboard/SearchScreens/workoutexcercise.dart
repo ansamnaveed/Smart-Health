@@ -70,7 +70,8 @@ class _WorkOutExcerciseState extends State<WorkOutExcercise> {
                         width: sx(75),
                         height: sx(75),
                         child: ElevatedButton(
-                          child: RatingBar(
+                          child: 
+                          RatingBar(
                             initialRating: 0,
                             direction: Axis.horizontal,
                             itemCount: 1,

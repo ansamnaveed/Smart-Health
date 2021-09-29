@@ -26,7 +26,7 @@ class _OneState extends State<One> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '1 of 6',
+                '1 of 7',
                 style: TextStyle(
                   color: Color.fromRGBO(65, 65, 67, 0.5),
                 ),
@@ -53,7 +53,8 @@ class _OneState extends State<One> {
                 children: [
                   Padding(
                     padding: EdgeInsets.only(top: sy(50)),
-                    child: Card(
+                    child: 
+                    Card(
                       elevation: 5,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.only(

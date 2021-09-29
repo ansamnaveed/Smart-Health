@@ -43,7 +43,8 @@ class _HealthTipsDescriptionState extends State<HealthTipsDescription> {
                   ),
                 ),
                 ListTile(
-                  trailing: RatingBar(
+                  trailing: 
+                  RatingBar(
                     initialRating: 0,
                     direction: Axis.horizontal,
                     itemCount: 1,

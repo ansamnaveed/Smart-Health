@@ -23,7 +23,7 @@ class _SixState extends State<Six> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '6 of 6',
+                '6 of 7',
                 style: TextStyle(
                   color: Color.fromRGBO(65, 65, 67, 0.5),
                 ),
