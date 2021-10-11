@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "267136824106",
+    "project_id": "fireauth-8c86c",
+    "storage_bucket": "fireauth-8c86c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:267136824106:android:fdf224289d9b759a6fe453",
+        "android_client_info": {
+          "package_name": "com.ansam.fireauth"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "267136824106-gb8bvl6b630mpd7qa6k0qhn70klddu3b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJtxMmzfMFA2y1mdaxgopUgLOyRVOpxeI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "267136824106-gb8bvl6b630mpd7qa6k0qhn70klddu3b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
