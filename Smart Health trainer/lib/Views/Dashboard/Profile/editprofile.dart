@@ -95,11 +95,9 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  update(String image, String namef, String namel) async {
+  update(String image) async {
     await FirebaseFirestore.instance.collection("users").doc(user.uid).update({
       "imageUrl": image,
-      "firstname": namef,
-      "lastname": namel,
     });
     getData();
   }
@@ -147,9 +145,6 @@ class _EditProfileState extends State<EditProfile> {
     super.initState();
     getData();
   }
-
-  TextEditingController fnameController = TextEditingController();
-  TextEditingController lnameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -415,7 +410,8 @@ class _EditProfileState extends State<EditProfile> {
                                         offset: Offset(1, 1),
                                       )
                                     ]),
-                                child: TextFormField(
+                                child: 
+                                TextFormField(
                                   initialValue: email,
                                   readOnly: true,
                                   cursorColor: Colors.black,
@@ -469,7 +465,6 @@ class _EditProfileState extends State<EditProfile> {
                                         child: TextFormField(
                                           initialValue: fname,
                                           cursorColor: Colors.black,
-                                          controller: fnameController,
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
                                             focusedBorder: InputBorder.none,
@@ -508,20 +503,20 @@ class _EditProfileState extends State<EditProfile> {
                                             MediaQuery.of(context).size.width /
                                                 2.5,
                                         decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(30),
-                                            color: Colors.white,
-                                            boxShadow: <BoxShadow>[
-                                              BoxShadow(
-                                                color: Colors.black38,
-                                                blurRadius: 2.0,
-                                                spreadRadius: -1,
-                                                offset: Offset(1, 1),
-                                              )
-                                            ],),
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          color: Colors.white,
+                                          boxShadow: <BoxShadow>[
+                                            BoxShadow(
+                                              color: Colors.black38,
+                                              blurRadius: 2.0,
+                                              spreadRadius: -1,
+                                              offset: Offset(1, 1),
+                                            )
+                                          ],
+                                        ),
                                         child: TextFormField(
                                           initialValue: lname,
-                                          controller: lnameController,
                                           cursorColor: Colors.black,
                                           decoration: InputDecoration(
                                             border: InputBorder.none,
@@ -623,15 +618,7 @@ class _EditProfileState extends State<EditProfile> {
                               child: gradientButton(
                                 'Update',
                                 () {
-                                  String namef = fnameController.text;
-                                  String namel = lnameController.text;
-                                  print('Image: ' +
-                                      fileUrl +
-                                      'First Name: ' +
-                                      namef +
-                                      'Last Name: ' +
-                                      namel);
-                                  // update(fileUrl, namef, namel);
+                                  update(fileUrl);
                                 },
                               ),
                             ),

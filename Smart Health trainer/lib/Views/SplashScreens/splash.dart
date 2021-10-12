@@ -1,10 +1,9 @@
 import 'package:fireauth/Views/SignInScreen/signin.dart';
-import 'package:fireauth/Views/introscreens/intro.dart';
-import 'package:fireauth/Widgets/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:outline_gradient_button/outline_gradient_button.dart';
 import 'package:relative_scale/relative_scale.dart';
+
 class Splash extends StatefulWidget {
   const Splash({Key key}) : super(key: key);
 
@@ -133,16 +132,6 @@ class _SplashState extends State<Splash> {
                       ],
                     ),
                   ),
-                  gradientButton(
-                    'Sign Up',
-                    () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => IntroScreen(),
-                        ),
-                      );
-                    },
-                  ),
                   Padding(
                     padding: EdgeInsets.only(top: sy(10)),
                     child: OutlineGradientButton(
@@ -160,8 +149,7 @@ class _SplashState extends State<Splash> {
                         width: MediaQuery.of(context).size.width,
                         height: 40,
                         alignment: Alignment.center,
-                        child: 
-                        GradientText(
+                        child: GradientText(
                           'Sign In',
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,

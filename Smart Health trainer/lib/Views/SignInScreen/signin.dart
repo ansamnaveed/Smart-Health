@@ -1,13 +1,11 @@
 import 'package:fireauth/Models/auth_services.dart';
 import 'package:fireauth/Views/Dashboard/dashboard.dart';
-import 'package:fireauth/Views/introscreens/intro.dart';
 import 'package:fireauth/Widgets/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:outline_gradient_button/outline_gradient_button.dart';
 import 'package:relative_scale/relative_scale.dart';
 import 'package:provider/provider.dart';
 
@@ -261,47 +259,6 @@ class _SignInState extends State<SignIn> {
                             ),
                           ),
                         ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: OutlineGradientButton(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => IntroScreen(),
-                            ),
-                          );
-                        },
-                        elevation: 5,
-                        radius: Radius.circular(30),
-                        backgroundColor: Colors.white,
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 40,
-                          alignment: Alignment.center,
-                          child: GradientText(
-                            'Sign Up',
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: <Color>[
-                                Color.fromRGBO(65, 65, 67, 1),
-                                Color.fromRGBO(239, 66, 54, 1),
-                              ],
-                            ),
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: <Color>[
-                            Color.fromRGBO(65, 65, 67, 1),
-                            Color.fromRGBO(239, 66, 54, 1),
-                          ],
-                        ),
-                        strokeWidth: 2,
                       ),
                     ),
                   ],
