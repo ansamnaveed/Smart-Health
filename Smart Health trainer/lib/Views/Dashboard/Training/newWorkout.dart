@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:ui';
 import 'package:file_picker/file_picker.dart';
+import 'package:fireauth/Widgets/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttericon/entypo_icons.dart';
 import 'package:fluttericon/linecons_icons.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,6 +24,7 @@ class NewWorkout extends StatefulWidget {
 class _NewWorkoutState extends State<NewWorkout> {
   String fileUrl;
   String excercise;
+  File fileVideo;
   Future _camImage() async {
     try {
       final pickedFile = await ImagePicker().pickImage(
@@ -46,6 +49,27 @@ class _NewWorkoutState extends State<NewWorkout> {
     } catch (e) {
       print('Error: ' + e);
     }
+  }
+
+  bool tap = false;
+
+  Future _camVideo() async {
+    try {
+      final pickedVideo = await ImagePicker().pickVideo(
+        source: ImageSource.camera,
+        maxDuration: Duration(minutes: 2),
+      );
+
+      if (pickedVideo == null) {
+        return;
+      } else {
+        setState(() {
+          tap = true;
+        });
+      }
+
+      await _uploadVideo(pickedVideo.path);
+    } catch (e) {}
   }
 
   Future _galleryImage() async {
@@ -74,6 +98,27 @@ class _NewWorkoutState extends State<NewWorkout> {
     }
   }
 
+  Future _galleryVideo() async {
+    try {
+      FilePickerResult result =
+          await FilePicker.platform.pickFiles(type: FileType.video);
+
+      final pickedVideo = File(result.files.single.path);
+
+      if (pickedVideo == null) {
+        return;
+      } else {
+        setState(() {
+          tap = true;
+        });
+      }
+
+      await _uploadVideo(pickedVideo.path);
+    } catch (e) {
+      print('Error: ' + e.toString());
+    }
+  }
+
   Future _uploadFile(String path) async {
     final ref = storage.FirebaseStorage.instance
         .ref()
@@ -90,6 +135,22 @@ class _NewWorkoutState extends State<NewWorkout> {
     );
   }
 
+  Future _uploadVideo(String path) async {
+    final ref = storage.FirebaseStorage.instance
+        .ref()
+        .child(FirebaseAuth.instance.currentUser.uid + "'s workouts")
+        .child('${DateTime.now().toIso8601String() + p.basename(path)}');
+
+    final result = await ref.putFile(File(path));
+
+    String url = await result.ref.getDownloadURL();
+    setState(
+      () {
+        excercise = url;
+      },
+    );
+  }
+
   Future<File> compressImage(String path, int quality) async {
     final newPath = p.join((await getTemporaryDirectory()).path,
         '${DateTime.now()}.${p.extension(path)}');
@@ -102,9 +163,6 @@ class _NewWorkoutState extends State<NewWorkout> {
 
     return result;
   }
-
-  storage.Reference photos =
-      storage.FirebaseStorage.instance.ref().child("gifs");
 
   @override
   Widget build(BuildContext context) {
@@ -461,17 +519,82 @@ class _NewWorkoutState extends State<NewWorkout> {
                               topRight: Radius.circular(30),
                             ),
                           ),
-                          child: GridView.builder(
-                            itemCount: 128,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3),
-                            itemBuilder: (context, index) {
-                              return GridTile(
-                                child: Image.network(
-                                    "${photos.child("image (index).gif").getDownloadURL()}"),
-                              );
-                            },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Center(
+                                child: Icon(Icons.drag_handle_rounded),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  _camVideo();
+                                },
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(right: 20),
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: <Color>[
+                                              Color.fromRGBO(65, 65, 67, 1),
+                                              Color.fromRGBO(239, 66, 54, 1),
+                                            ],
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(50)),
+                                      child: Icon(
+                                        Linecons.camera,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Take photo',
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  _galleryVideo();
+                                },
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(right: 20),
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: <Color>[
+                                              Color.fromRGBO(65, 65, 67, 1),
+                                              Color.fromRGBO(239, 66, 54, 1),
+                                            ],
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(50)),
+                                      child: Icon(
+                                        Linecons.photo,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Select from gallery',
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -493,23 +616,40 @@ class _NewWorkoutState extends State<NewWorkout> {
                       ],
                     ),
                     child: excercise != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(30),
-                            child: Image.network(
-                              excercise,
-                              fit: BoxFit.cover,
-                            ),
+                        ? Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.cloud_done_rounded),
+                              Text('Vedio Uploaded')
+                            ],
                           )
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.add_a_photo_rounded),
-                              Text('No excercise selected')
+                              tap == false
+                                  ? Icon(Entypo.video)
+                                  : Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                              tap == false
+                                  ? Text('No excercise selected')
+                                  : Text('Uploading....')
                             ],
                           ),
                   ),
                 ),
               ),
+              Padding(
+                padding: EdgeInsets.all(10),
+                child: gradientButton(
+                  "Submit",
+                  () {},
+                ),
+              )
             ],
           ),
         ),
