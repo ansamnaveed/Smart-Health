@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fireauth/Widgets/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -219,7 +220,7 @@ class _NewWorkoutState extends State<NewWorkout> {
                       ]),
                   child: TextFormField(
                     cursorColor: Colors.black,
-                    // controller: emailController,
+                    controller: nameController,
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
@@ -261,7 +262,7 @@ class _NewWorkoutState extends State<NewWorkout> {
                   child: TextFormField(
                     cursorColor: Colors.black,
                     keyboardType: TextInputType.number,
-                    // controller: emailController,
+                    controller: durationController,
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
@@ -302,7 +303,7 @@ class _NewWorkoutState extends State<NewWorkout> {
                   child: TextFormField(
                     cursorColor: Colors.black,
                     maxLines: 5,
-                    // controller: emailController,
+                    controller: descriptionController,
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
@@ -647,11 +648,65 @@ class _NewWorkoutState extends State<NewWorkout> {
                 padding: EdgeInsets.all(10),
                 child: gradientButton(
                   "Submit",
-                  () {},
+                  () {
+                    uploadWorkout();
+                  },
                 ),
               )
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  TextEditingController nameController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController durationController = TextEditingController();
+
+  int docNumber;
+  uploadWorkout() async {
+    User user = FirebaseAuth.instance.currentUser;
+    final String name = nameController.text.trim();
+    final String description = descriptionController.text.trim();
+    final String duration = durationController.text.trim();
+    final String thumbUrl = fileUrl;
+    final String workoutUrl = excercise;
+    DocumentSnapshot fnameFromuUsers = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user.uid)
+        .get();
+    String userName = fnameFromuUsers['firstname'];
+    DocumentSnapshot docFromFname = await FirebaseFirestore.instance
+        .collection("$userName's Workouts")
+        .doc("$docNumber")
+        .get();
+    if (docNumber == null) {
+      setState(() {
+        docNumber = 0;
+      });
+    } else {
+      setState(() {
+        docNumber = docFromFname['docNumber'];
+      });
+    }
+    await FirebaseFirestore.instance
+        .collection("$userName's Workouts")
+        .doc('${docNumber + 1}')
+        .set(
+      {
+        'name': name,
+        'description': description,
+        'duration': duration,
+        'thumbUrl': thumbUrl,
+        'workOutUrl': workoutUrl,
+        'docNumber': docNumber + 1,
+      },
+    ).then(
+      (value) => Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EndIntro(),
         ),
       ),
     );

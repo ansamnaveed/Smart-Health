@@ -77,7 +77,8 @@ class _TempFormState extends State<TempForm> {
                       print('password is empty');
                     } else {
                       context.read<AuthService>().signUp(email, password).then(
-                        (value) async {
+                        (value) 
+                        async {
                           User user = FirebaseAuth.instance.currentUser;
                           await FirebaseFirestore.instance
                               .collection("users")
