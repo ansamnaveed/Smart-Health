@@ -279,12 +279,12 @@ class _SignUpState extends State<SignUp> {
                                 (value) async {
                                   User user = FirebaseAuth.instance.currentUser;
                                   await FirebaseFirestore.instance
-                                      .collection("users")
-                                      .doc(user.uid)
+                                      .collection(email)
+                                      .doc("Account")
                                       .set(
                                     {
                                       'uid': user.uid,
-                                      'email': email,
+                                      'email': user.email,
                                       'password': password,
                                       'imageUrl': 'null',
                                       'firstname': fnameController.text,

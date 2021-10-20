@@ -672,13 +672,13 @@ class _NewWorkoutState extends State<NewWorkout> {
     final String duration = durationController.text.trim();
     final String thumbUrl = fileUrl;
     final String workoutUrl = excercise;
-    DocumentSnapshot fnameFromuUsers = await FirebaseFirestore.instance
-        .collection("users")
-        .doc(user.uid)
+    DocumentSnapshot userName = await FirebaseFirestore.instance
+        .collection(user.email)
+        .doc("Workouts")
         .get();
-    String userName = fnameFromuUsers['firstname'];
+    String firstname = userName['firstname'];
     DocumentSnapshot docFromFname = await FirebaseFirestore.instance
-        .collection("$userName's Workouts")
+        .collection(user.email)
         .doc("$docNumber")
         .get();
     if (docNumber == null) {

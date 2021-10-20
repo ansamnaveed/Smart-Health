@@ -39,9 +39,11 @@ class _UserProfileState extends State<UserProfile> {
 
   void getData() async {
     final User user = auth.currentUser;
-    final uid = user.uid;
-    DocumentSnapshot variable =
-        await FirebaseFirestore.instance.collection("users").doc(uid).get();
+    // final uid = user.uid;
+    DocumentSnapshot variable = await FirebaseFirestore.instance
+        .collection(user.email)
+        .doc("Account")
+        .get();
     setState(() {
       fullname = variable['firstname'] + ' ' + variable['lastname'];
       fileUrl = variable['imageUrl'];
@@ -87,7 +89,7 @@ class _UserProfileState extends State<UserProfile> {
                             border: Border.all(color: Colors.grey, width: 1),
                           ),
                           child: ClipOval(
-                            child: fileUrl != 'null'
+                            child: fileUrl != ''
                                 ? Image.network(fileUrl)
                                 : Icon(
                                     FontAwesome.user_secret,
