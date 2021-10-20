@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:fireauth/Views/Dashboard/Profile/userprofile.dart';
 import 'package:fireauth/Widgets/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -9,7 +10,6 @@ import 'package:fluttericon/fontelico_icons.dart';
 import 'package:fluttericon/linecons_icons.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -95,11 +95,25 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  update(String image) async {
-    await FirebaseFirestore.instance.collection("users").doc(user.uid).update({
-      "imageUrl": image,
-    });
+  update(String file, String about, String desc) async {
     getData();
+    await FirebaseFirestore.instance
+        .collection("${user.email}'s Account")
+        .doc("Account")
+        .set(
+      {
+        "imageUrl": file,
+      },
+    );
+    await FirebaseFirestore.instance
+        .collection("${user.email}'s Account")
+        .doc("Trainer")
+        .set(
+      {
+        "about": about,
+        "description": desc,
+      },
+    );
   }
 
   Future<File> compressImage(String path, int quality) async {
@@ -117,8 +131,11 @@ class _EditProfileState extends State<EditProfile> {
 
   String fname;
   String lname;
-  String email;
-  String password;
+  String desc;
+  String about;
+
+  TextEditingController aboutController = TextEditingController();
+  TextEditingController descController = TextEditingController();
 
   bool show = false;
 
@@ -126,16 +143,21 @@ class _EditProfileState extends State<EditProfile> {
 
   void getData() async {
     final User user = auth.currentUser;
-    final uid = user.uid;
-    DocumentSnapshot variable =
-        await FirebaseFirestore.instance.collection("users").doc(uid).get();
+    DocumentSnapshot variable = await FirebaseFirestore.instance
+        .collection("${user.email}'s Account")
+        .doc("Account")
+        .get();
+    DocumentSnapshot variable1 = await FirebaseFirestore.instance
+        .collection("${user.email}'s Account")
+        .doc("Trainer")
+        .get();
     setState(
       () {
         fname = variable['firstname'];
         lname = variable['lastname'];
-        email = variable['email'];
-        password = variable['password'];
         fileUrl = variable['imageUrl'];
+        desc = variable1['description'];
+        about = variable1['about'];
       },
     );
   }
@@ -155,7 +177,12 @@ class _EditProfileState extends State<EditProfile> {
             centerTitle: true,
             leading: IconButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserProfile(),
+                  ),
+                );
               },
               icon: Icon(
                 Icons.arrow_back_rounded,
@@ -172,11 +199,11 @@ class _EditProfileState extends State<EditProfile> {
                   fontWeight: FontWeight.bold),
             ),
           ),
-          body: email == null || password == null
+          body: user.email == null
+              //  || password == null
               ? Center(
                   child: Icon(
                     Fontelico.spin6,
-                    color: Color.fromRGBO(239, 66, 54, 1),
                   ),
                 )
               : SingleChildScrollView(
@@ -197,7 +224,7 @@ class _EditProfileState extends State<EditProfile> {
                                   ),
                                 ),
                                 contentPadding: EdgeInsets.all(0),
-                                content: fileUrl != 'null'
+                                content: fileUrl != ""
                                     ? Image.network(fileUrl)
                                     : Container(
                                         width: 100,
@@ -218,7 +245,7 @@ class _EditProfileState extends State<EditProfile> {
                               borderRadius: BorderRadius.circular(50),
                             ),
                             child: ClipOval(
-                              child: fileUrl != 'null'
+                              child: fileUrl != ''
                                   ? Image.network(fileUrl)
                                   : Icon(FontAwesome.user_secret, size: 50),
                             ),
@@ -389,168 +416,15 @@ class _EditProfileState extends State<EditProfile> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(left: sy(20)),
-                              child: Text(
-                                'Email Address',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30),
-                                    color: Colors.white,
-                                    boxShadow: <BoxShadow>[
-                                      BoxShadow(
-                                        color: Colors.black38,
-                                        blurRadius: 2.0,
-                                        spreadRadius: -1,
-                                        offset: Offset(1, 1),
-                                      )
-                                    ]),
-                                child: 
-                                TextFormField(
-                                  initialValue: email,
-                                  readOnly: true,
-                                  cursorColor: Colors.black,
-                                  keyboardType: TextInputType.emailAddress,
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    focusedBorder: InputBorder.none,
-                                    enabledBorder: InputBorder.none,
-                                    errorBorder: InputBorder.none,
-                                    disabledBorder: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: sx(20)),
-                                    hintText: 'abc@xyz.com',
-                                    hintStyle: TextStyle(
-                                      color: Color.fromRGBO(118, 129, 150, 1),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(left: sx(20)),
-                                      child: Text(
-                                        'First Name',
-                                        style: TextStyle(color: Colors.grey),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                2.5,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(30),
-                                            color: Colors.white,
-                                            boxShadow: <BoxShadow>[
-                                              BoxShadow(
-                                                color: Colors.black38,
-                                                blurRadius: 2.0,
-                                                spreadRadius: -1,
-                                                offset: Offset(1, 1),
-                                              )
-                                            ]),
-                                        child: TextFormField(
-                                          initialValue: fname,
-                                          cursorColor: Colors.black,
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            focusedBorder: InputBorder.none,
-                                            enabledBorder: InputBorder.none,
-                                            errorBorder: InputBorder.none,
-                                            disabledBorder: InputBorder.none,
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    horizontal: sx(20)),
-                                            hintText: 'First Name',
-                                            hintStyle: TextStyle(
-                                              color: Color.fromRGBO(
-                                                  118, 129, 150, 1),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Spacer(),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.only(left: sx(20)),
-                                      child: Text(
-                                        'Last Name',
-                                        style: TextStyle(color: Colors.grey),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                2.5,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
-                                          color: Colors.white,
-                                          boxShadow: <BoxShadow>[
-                                            BoxShadow(
-                                              color: Colors.black38,
-                                              blurRadius: 2.0,
-                                              spreadRadius: -1,
-                                              offset: Offset(1, 1),
-                                            )
-                                          ],
-                                        ),
-                                        child: TextFormField(
-                                          initialValue: lname,
-                                          cursorColor: Colors.black,
-                                          decoration: InputDecoration(
-                                            border: InputBorder.none,
-                                            focusedBorder: InputBorder.none,
-                                            enabledBorder: InputBorder.none,
-                                            errorBorder: InputBorder.none,
-                                            disabledBorder: InputBorder.none,
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    horizontal: sx(20)),
-                                            hintText: 'Last Name',
-                                            hintStyle: TextStyle(
-                                              color: Color.fromRGBO(
-                                                  118, 129, 150, 1),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Padding(
                               padding: EdgeInsets.only(left: sx(20)),
                               child: Text(
-                                'Password',
+                                'About',
                                 style: TextStyle(color: Colors.grey),
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Container(
-                                width: double.infinity,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(30),
                                   color: Colors.white,
@@ -563,62 +437,77 @@ class _EditProfileState extends State<EditProfile> {
                                     )
                                   ],
                                 ),
-                                child: Stack(
-                                  children: [
-                                    TextFormField(
-                                      readOnly: true,
-                                      initialValue: password,
-                                      obscureText: show == true ? false : true,
-                                      obscuringCharacter: '.',
-                                      cursorColor: Colors.black,
-                                      decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        focusedBorder: InputBorder.none,
-                                        enabledBorder: InputBorder.none,
-                                        errorBorder: InputBorder.none,
-                                        disabledBorder: InputBorder.none,
-                                        contentPadding: EdgeInsets.symmetric(
-                                            horizontal: sx(20)),
-                                        hintText: password,
-                                        hintStyle: TextStyle(
-                                          color:
-                                              Color.fromRGBO(118, 129, 150, 1),
-                                        ),
-                                      ),
+                                child: TextFormField(
+                                  // initialValue: about,
+                                  controller: aboutController,
+                                  cursorColor: Colors.black,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    errorBorder: InputBorder.none,
+                                    disabledBorder: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: sx(20)),
+                                    hintText: 'About',
+                                    hintStyle: TextStyle(
+                                      color: Color.fromRGBO(118, 129, 150, 1),
                                     ),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: IconButton(
-                                        onPressed: () {
-                                          if (show == false) {
-                                            setState(() {
-                                              show = true;
-                                            });
-                                          } else if (show == true) {
-                                            setState(() {
-                                              show = false;
-                                            });
-                                          }
-                                        },
-                                        icon: Icon(
-                                          show == true
-                                              ? FontAwesome.eye
-                                              : FontAwesome.eye_off,
-                                          color: Colors.black,
-                                        ),
-                                      ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: sx(20)),
+                              child: Text(
+                                'Description',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  color: Colors.white,
+                                  boxShadow: <BoxShadow>[
+                                    BoxShadow(
+                                      color: Colors.black38,
+                                      blurRadius: 2.0,
+                                      spreadRadius: -1,
+                                      offset: Offset(1, 1),
                                     )
                                   ],
+                                ),
+                                child: TextFormField(
+                                  // initialValue: desc,
+                                  cursorColor: Colors.black,
+                                  controller: descController,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    errorBorder: InputBorder.none,
+                                    disabledBorder: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: sx(20)),
+                                    hintText: 'About',
+                                    hintStyle: TextStyle(
+                                      color: Color.fromRGBO(118, 129, 150, 1),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 20, horizontal: 8),
+                                  vertical: 40, horizontal: 8),
                               child: gradientButton(
                                 'Update',
                                 () {
-                                  update(fileUrl);
+                                  String about = aboutController.text.trim();
+                                  String desc = descController.text.trim();
+                                  update(fileUrl, about, desc);
                                 },
                               ),
                             ),

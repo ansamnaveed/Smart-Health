@@ -98,7 +98,7 @@ class _EditProfileState extends State<EditProfile> {
   update(String image) async {
     getData();
     await FirebaseFirestore.instance
-        .collection(user.email)
+        .collection("${user.email}'s Account")
         .doc("Account")
         .update(
       {
@@ -130,7 +130,7 @@ class _EditProfileState extends State<EditProfile> {
   void getData() async {
     final User user = auth.currentUser;
     DocumentSnapshot variable = await FirebaseFirestore.instance
-        .collection(user.email)
+        .collection("${user.email}'s Account")
         .doc("Account")
         .get();
     setState(

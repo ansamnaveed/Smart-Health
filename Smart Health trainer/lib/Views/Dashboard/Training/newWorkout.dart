@@ -123,7 +123,7 @@ class _NewWorkoutState extends State<NewWorkout> {
   Future _uploadFile(String path) async {
     final ref = storage.FirebaseStorage.instance
         .ref()
-        .child(FirebaseAuth.instance.currentUser.uid + "'s workouts")
+        .child(FirebaseAuth.instance.currentUser.email + "'s workouts")
         .child('${DateTime.now().toIso8601String() + p.basename(path)}');
 
     final result = await ref.putFile(File(path));
@@ -139,7 +139,7 @@ class _NewWorkoutState extends State<NewWorkout> {
   Future _uploadVideo(String path) async {
     final ref = storage.FirebaseStorage.instance
         .ref()
-        .child(FirebaseAuth.instance.currentUser.uid + "'s workouts")
+        .child(FirebaseAuth.instance.currentUser.email + "'s workouts")
         .child('${DateTime.now().toIso8601String() + p.basename(path)}');
 
     final result = await ref.putFile(File(path));
@@ -672,27 +672,28 @@ class _NewWorkoutState extends State<NewWorkout> {
     final String duration = durationController.text.trim();
     final String thumbUrl = fileUrl;
     final String workoutUrl = excercise;
-    DocumentSnapshot userName = await FirebaseFirestore.instance
-        .collection(user.email)
-        .doc("Workouts")
-        .get();
-    String firstname = userName['firstname'];
-    DocumentSnapshot docFromFname = await FirebaseFirestore.instance
-        .collection(user.email)
-        .doc("$docNumber")
-        .get();
-    if (docNumber == null) {
-      setState(() {
-        docNumber = 0;
-      });
-    } else {
-      setState(() {
-        docNumber = docFromFname['docNumber'];
-      });
-    }
+    // DocumentSnapshot userName = await FirebaseFirestore.instance
+    //     .collection(user.email)
+    //     .doc("Workouts")
+    //     .get();
+    // String firstname = userName['firstname'];
+    // DocumentSnapshot docFromFname = await FirebaseFirestore.instance
+    //     .collection(user.email)
+    //     .doc("$docNumber")
+    //     .get();
+    // if (docNumber == null) {
+    //   setState(() {
+    //     docNumber = 0;
+    //   });
+    // } else {
+    //   setState(() {
+    //     docNumber = docFromFname['docNumber'];
+    //   });
+    // }
+    String date = DateTime.now().toString();
     await FirebaseFirestore.instance
-        .collection("$userName's Workouts")
-        .doc('${docNumber + 1}')
+        .collection("${user.email}'s Workouts")
+        .doc(date)
         .set(
       {
         'name': name,
@@ -700,7 +701,7 @@ class _NewWorkoutState extends State<NewWorkout> {
         'duration': duration,
         'thumbUrl': thumbUrl,
         'workOutUrl': workoutUrl,
-        'docNumber': docNumber + 1,
+        'Date&Time': date
       },
     ).then(
       (value) => Navigator.pushReplacement(

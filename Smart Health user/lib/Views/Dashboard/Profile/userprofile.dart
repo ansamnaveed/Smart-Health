@@ -41,7 +41,7 @@ class _UserProfileState extends State<UserProfile> {
     final User user = auth.currentUser;
     // final uid = user.uid;
     DocumentSnapshot variable = await FirebaseFirestore.instance
-        .collection(user.email)
+        .collection("${user.email}'s Account")
         .doc("Account")
         .get();
     setState(() {

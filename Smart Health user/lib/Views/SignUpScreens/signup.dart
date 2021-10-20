@@ -279,7 +279,7 @@ class _SignUpState extends State<SignUp> {
                                 (value) async {
                                   User user = FirebaseAuth.instance.currentUser;
                                   await FirebaseFirestore.instance
-                                      .collection(email)
+                                      .collection("$email's Account")
                                       .doc("Account")
                                       .set(
                                     {
@@ -291,19 +291,19 @@ class _SignUpState extends State<SignUp> {
                                       'lastname': lnameController.text
                                     },
                                   );
+                                  if (User == null) {
+                                    print('Register Erorr');
+                                  } else {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EndIntro(),
+                                      ),
+                                    );
+                                  }
                                 },
                               );
                             }
-                          }
-                          if (User == null) {
-                            print('Register Erorr');
-                          } else {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EndIntro(),
-                              ),
-                            );
                           }
                         },
                       ),
