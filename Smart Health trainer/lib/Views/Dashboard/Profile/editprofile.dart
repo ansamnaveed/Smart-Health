@@ -93,14 +93,17 @@ class _EditProfileState extends State<EditProfile> {
         fileUrl = await result.ref.getDownloadURL();
       },
     );
+    getData();
   }
 
+  TextEditingController aboutController = TextEditingController();
+  TextEditingController descController = TextEditingController();
+
   update(String file, String about, String desc) async {
-    getData();
     await FirebaseFirestore.instance
         .collection("${user.email}'s Account")
         .doc("Account")
-        .set(
+        .update(
       {
         "imageUrl": file,
       },
@@ -129,14 +132,6 @@ class _EditProfileState extends State<EditProfile> {
     return result;
   }
 
-  String fname;
-  String lname;
-  String desc;
-  String about;
-
-  TextEditingController aboutController = TextEditingController();
-  TextEditingController descController = TextEditingController();
-
   bool show = false;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -147,17 +142,15 @@ class _EditProfileState extends State<EditProfile> {
         .collection("${user.email}'s Account")
         .doc("Account")
         .get();
-    DocumentSnapshot variable1 = await FirebaseFirestore.instance
-        .collection("${user.email}'s Account")
-        .doc("Trainer")
-        .get();
+    // DocumentSnapshot variable1 = await FirebaseFirestore.instance
+    //     .collection("${user.email}'s Account")
+    //     .doc("Trainer")
+    //     .get();
     setState(
       () {
-        fname = variable['firstname'];
-        lname = variable['lastname'];
         fileUrl = variable['imageUrl'];
-        desc = variable1['description'];
-        about = variable1['about'];
+        // desc = variable1['description'];
+        // about = variable1['about'];
       },
     );
   }
@@ -177,12 +170,13 @@ class _EditProfileState extends State<EditProfile> {
             centerTitle: true,
             leading: IconButton(
               onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UserProfile(),
-                  ),
-                );
+                // Navigator.pushReplacement(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => UserProfile(),
+                //   ),
+                // );
+                Navigator.pop(context);
               },
               icon: Icon(
                 Icons.arrow_back_rounded,
@@ -224,7 +218,7 @@ class _EditProfileState extends State<EditProfile> {
                                   ),
                                 ),
                                 contentPadding: EdgeInsets.all(0),
-                                content: fileUrl != ""
+                                content: fileUrl != "null"
                                     ? Image.network(fileUrl)
                                     : Container(
                                         width: 100,
@@ -245,7 +239,7 @@ class _EditProfileState extends State<EditProfile> {
                               borderRadius: BorderRadius.circular(50),
                             ),
                             child: ClipOval(
-                              child: fileUrl != ''
+                              child: fileUrl != 'null'
                                   ? Image.network(fileUrl)
                                   : Icon(FontAwesome.user_secret, size: 50),
                             ),
@@ -439,8 +433,8 @@ class _EditProfileState extends State<EditProfile> {
                                 ),
                                 child: TextFormField(
                                   // initialValue: about,
-                                  controller: aboutController,
                                   cursorColor: Colors.black,
+                                  controller: aboutController,
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
                                     focusedBorder: InputBorder.none,

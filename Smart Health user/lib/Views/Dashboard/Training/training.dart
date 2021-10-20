@@ -1,5 +1,6 @@
-import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fireauth/Views/player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
@@ -13,27 +14,6 @@ class Training extends StatefulWidget {
 }
 
 class _TrainingState extends State<Training> {
-  int _currentPage = 0;
-  PageController _pageController = PageController(
-    initialPage: 0,
-  );
-  void initState() {
-    super.initState();
-    Timer.periodic(Duration(seconds: 5), (Timer timer) {
-      if (_currentPage < 4) {
-        _currentPage++;
-      } else {
-        _currentPage = 0;
-      }
-
-      _pageController.animateToPage(
-        _currentPage,
-        duration: Duration(seconds: 1),
-        curve: Curves.easeIn,
-      );
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return RelativeBuilder(
@@ -98,108 +78,7 @@ class _TrainingState extends State<Training> {
                     ),
                     height: sy(170),
                     width: double.infinity,
-                    child: 
-                    PageView.builder(
-                      allowImplicitScrolling: true,
-                      physics: BouncingScrollPhysics(),
-                      itemCount: 5,
-                      // itemCount: popularBooks == null ? 0 : popularBooks.length,
-                      controller: _pageController,
-                      itemBuilder: (_, i) {
-                        return Container(
-                          margin: EdgeInsets.only(right: 2.5, left: 2.5),
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                  'https://d2z0k43lzfi12d.cloudfront.net/blog/vcdn333/wp-content/uploads/2018/08/thumbnail_1200x800-1-1024x683.jpg',
-                                ),
-                                fit: BoxFit.fill),
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(50),
-                              bottomRight: Radius.circular(10),
-                              bottomLeft: Radius.circular(10),
-                            ),
-                          ),
-                          // height: 150,
-                          width: double.infinity,
-                          child: Container(
-                            padding: EdgeInsets.all(sy(20)),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                topRight: Radius.circular(50),
-                                bottomRight: Radius.circular(10),
-                                bottomLeft: Radius.circular(10),
-                              ),
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: <Color>[
-                                  Colors.transparent,
-                                  Color.fromRGBO(239, 66, 54, .5),
-                                ],
-                              ),
-                            ),
-                            width: double.infinity,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Next Workout',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(vertical: sy(10)),
-                                  child: Text(
-                                    'Legs Toning and\nGlutes Workout at Home',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: sy(16)),
-                                  ),
-                                ),
-                                Spacer(),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Icon(
-                                      Icons.timelapse,
-                                      size: 15,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      ' 68 min',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    Spacer(),
-                                    Container(
-                                      width: sx(75),
-                                      height: sx(75),
-                                      child: ElevatedButton(
-                                        child: Icon(
-                                          Icons.play_arrow_rounded,
-                                          color: Colors.grey,
-                                        ),
-                                        style: ElevatedButton.styleFrom(
-                                          padding: EdgeInsets.zero,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(50),
-                                          ),
-                                          primary:
-                                              Color.fromRGBO(255, 255, 255, 1),
-                                        ),
-                                        onPressed: () {},
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                    child: body(),
                   ),
                 ),
                 Padding(
@@ -391,6 +270,124 @@ class _TrainingState extends State<Training> {
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  CollectionReference _productss =
+      FirebaseFirestore.instance.collection("slider");
+
+  Widget body() {
+    return StreamBuilder(
+      stream: _productss.snapshots(),
+      builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+        if (streamSnapshot.hasData) {
+          return PageView.builder(
+            itemCount: streamSnapshot.data.docs.length,
+            itemBuilder: (context, index) {
+              final DocumentSnapshot documentSnapshot =
+                  streamSnapshot.data.docs[index];
+              return Container(
+                margin: EdgeInsets.only(right: 2.5, left: 2.5),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage(documentSnapshot['thumb']),
+                      fit: BoxFit.fill),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(50),
+                    bottomRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                  ),
+                ),
+                // height: 150,
+                width: double.infinity,
+                child: Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(50),
+                      bottomRight: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                    ),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: <Color>[
+                        Colors.transparent,
+                        Color.fromRGBO(239, 66, 54, .5),
+                      ],
+                    ),
+                  ),
+                  width: double.infinity,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        documentSnapshot['name'],
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Text(
+                          documentSnapshot['description'],
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      ),
+                      Spacer(),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Icon(
+                            Icons.timelapse,
+                            size: 15,
+                            color: Colors.white,
+                          ),
+                          Text(
+                            ' ${documentSnapshot["duration"]} min',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Spacer(),
+                          Container(
+                            width: 50,
+                            height: 50,
+                            child: ElevatedButton(
+                              child: Icon(
+                                Icons.play_arrow_rounded,
+                                color: Colors.grey,
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                primary: Color.fromRGBO(255, 255, 255, 1),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => Player(
+                                      documentSnapshot['video'],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        }
+
+        return Center(
+          child: CircularProgressIndicator(),
         );
       },
     );

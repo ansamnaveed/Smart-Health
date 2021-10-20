@@ -89,7 +89,7 @@ class _UserProfileState extends State<UserProfile> {
                             border: Border.all(color: Colors.grey, width: 1),
                           ),
                           child: ClipOval(
-                            child: fileUrl != ''
+                            child: fileUrl != 'null'
                                 ? Image.network(fileUrl)
                                 : Icon(
                                     FontAwesome.user_secret,

@@ -104,6 +104,8 @@ class _EditProfileState extends State<EditProfile> {
       {
         "imageUrl": image,
       },
+    ).then(
+      (value) => Navigator.pop(context),
     );
   }
 
@@ -204,7 +206,7 @@ class _EditProfileState extends State<EditProfile> {
                                   ),
                                 ),
                                 contentPadding: EdgeInsets.all(0),
-                                content: fileUrl != ""
+                                content: fileUrl != "null"
                                     ? Image.network(fileUrl)
                                     : Container(
                                         width: 100,
@@ -225,7 +227,7 @@ class _EditProfileState extends State<EditProfile> {
                               borderRadius: BorderRadius.circular(50),
                             ),
                             child: ClipOval(
-                              child: fileUrl != ''
+                              child: fileUrl != 'null'
                                   ? Image.network(fileUrl)
                                   : Icon(FontAwesome.user_secret, size: 50),
                             ),
