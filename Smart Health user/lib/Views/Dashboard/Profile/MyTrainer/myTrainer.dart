@@ -59,11 +59,11 @@ class _MyTrainerState extends State<MyTrainer> {
                     ),
                     child: ListTile(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TrainerDescription(),
-                            ));
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //       builder: (context) => TrainerDescription(),
+                        //     ));
                       },
                       contentPadding: EdgeInsets.symmetric(horizontal: 10),
                       leading: Container(

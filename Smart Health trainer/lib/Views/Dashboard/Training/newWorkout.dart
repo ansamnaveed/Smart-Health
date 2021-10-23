@@ -703,7 +703,20 @@ class _NewWorkoutState extends State<NewWorkout> {
         'workOutUrl': workoutUrl,
         'Date&Time': date
       },
-    ).then(
+    ).then((value) async {
+      await FirebaseFirestore.instance
+          .collection("All Workouts")
+          .doc(date)
+          .set({
+        'uploader': user.email,
+        'name': name,
+        'description': description,
+        'duration': duration,
+        'thumbUrl': thumbUrl,
+        'workOutUrl': workoutUrl,
+        'Date&Time': date
+      });
+    }).then(
       (value) => Navigator.pushReplacement(
         context,
         MaterialPageRoute(

@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fireauth/Views/Dashboard/Profile/MyTrainer/trainerdescription.dart';
+import 'package:fireauth/Views/player.dart';
 import 'package:fireauth/Widgets/theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:relative_scale/relative_scale.dart';
@@ -6,16 +10,60 @@ import 'package:relative_scale/relative_scale.dart';
 import 'workoutexcercise.dart';
 
 class WorkOutScreen extends StatefulWidget {
-  WorkOutScreen({Key key}) : super(key: key);
+  final String description;
+  final String duration;
+  final String name;
+  final String thumbUrl;
+  final String workOutUrl;
+  final String uploader;
+  const WorkOutScreen(
+    this.description,
+    this.duration,
+    this.name,
+    this.thumbUrl,
+    this.workOutUrl,
+    this.uploader,
+  );
 
   @override
   _WorkOutScreenState createState() => _WorkOutScreenState();
 }
 
 class _WorkOutScreenState extends State<WorkOutScreen> {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  String email;
+  String fullname;
+  String imageurl;
+  String about;
+  String description;
+
+  void getData() async {
+    DocumentSnapshot account = await FirebaseFirestore.instance
+        .collection("${widget.uploader}'s Account")
+        .doc("Account")
+        .get();
+    DocumentSnapshot trainer = await FirebaseFirestore.instance
+        .collection("${widget.uploader}'s Account")
+        .doc("Trainer")
+        .get();
+    setState(
+      () {
+        email = account['email'];
+        fullname = "${account['firstname']} ${account['lastname']}";
+        imageurl = account['imageUrl'];
+        about = trainer['about'];
+        description = trainer['description'];
+      },
+    );
+    // print("email=================================>${widget.uploader}");
+    // print("fullname=================================>$fullname");
+    // print("about=================================>$about");
+  }
+
   void initState() {
     super.initState();
-    isWatched = false;
+    getData();
   }
 
   Widget build(BuildContext context) {
@@ -36,7 +84,7 @@ class _WorkOutScreenState extends State<WorkOutScreen> {
             elevation: 0,
             backgroundColor: Colors.transparent,
             title: Text(
-              'WorkOut Name',
+              widget.name,
               style: TextStyle(
                   fontSize: sy(18),
                   color: Colors.black,
@@ -85,8 +133,7 @@ class _WorkOutScreenState extends State<WorkOutScreen> {
                       ],
                       borderRadius: BorderRadius.circular(10),
                       image: DecorationImage(
-                        image: NetworkImage(
-                            'https://daman.co.id/daman.co.id/wp-content/uploads/2020/03/Weight-Loss-Exercises-for-Men-At-Home.jpg'),
+                        image: NetworkImage(widget.thumbUrl),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -106,342 +153,57 @@ class _WorkOutScreenState extends State<WorkOutScreen> {
                           ],
                         ),
                       ),
-                      child: Text(
-                        '7 Minutes Workout',
-                        style: TextStyle(color: Colors.white),
-                      ),
                     ),
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(20),
                   color: Color.fromRGBO(239, 65, 54, .75),
-                  child: Row(
+                  child: ListTile(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              TrainerDescription(widget.uploader),
+                        ),
+                      );
+                    },
+                    title: Text(fullname),
+                    subtitle: Text(about),
+                    leading: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: NetworkImage(imageurl), fit: BoxFit.cover),
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(
+                            color: isWatched == false
+                                ? Color.fromRGBO(65, 65, 67, 1)
+                                : Color.fromRGBO(239, 65, 54, 1),
+                            width: 2),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Column(
                     children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
                         children: [
                           Text(
-                            'Total: 6 Excercises',
-                            style: TextStyle(color: Colors.white),
+                            'Duration:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Text(
-                            'Time: 15 Minutes',
-                            style: TextStyle(color: Colors.white),
+                            "${widget.duration} min",
                           ),
                         ],
                       ),
-                      Spacer(),
-                      Container(
-                        height: 30,
-                        width: 1,
-                        color: Colors.white,
-                      ),
-                      Spacer(),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Energy you'll burn",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            '250 Calories',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
-                      )
+                      Text(widget.description),
                     ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                    leading: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                'https://images.medicinenet.com/images/article/main_image/what-are-push-ups-for.jpg'),
-                            fit: BoxFit.cover),
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                            color: isWatched == false
-                                ? Color.fromRGBO(65, 65, 67, 1)
-                                : Color.fromRGBO(239, 65, 54, 1),
-                            width: 2),
-                      ),
-                    ),
-                    trailing: isWatched == false
-                        ? Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.red,
-                            ),
-                            padding: EdgeInsets.all(5),
-                            child: Text(
-                              'Remaining',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 10),
-                            ),
-                          )
-                        : Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                          ),
-                    title: Text('Push-ups'),
-                    subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Time: ',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                '2 mins',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                'Burns: ',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                '65 Calories',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ]),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                    leading: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                'https://images.medicinenet.com/images/article/main_image/what-are-push-ups-for.jpg'),
-                            fit: BoxFit.cover),
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                            color: isWatched == false
-                                ? Color.fromRGBO(65, 65, 67, 1)
-                                : Color.fromRGBO(239, 65, 54, 1),
-                            width: 2),
-                      ),
-                    ),
-                    trailing: isWatched == false
-                        ? Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.red,
-                            ),
-                            padding: EdgeInsets.all(5),
-                            child: Text(
-                              'Remaining',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 10),
-                            ),
-                          )
-                        : Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                          ),
-                    title: Text('Push-ups'),
-                    subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Time: ',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                '2 mins',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                'Burns: ',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                '65 Calories',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ]),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                    leading: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                'https://images.medicinenet.com/images/article/main_image/what-are-push-ups-for.jpg'),
-                            fit: BoxFit.cover),
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                            color: isWatched == false
-                                ? Color.fromRGBO(65, 65, 67, 1)
-                                : Color.fromRGBO(239, 65, 54, 1),
-                            width: 2),
-                      ),
-                    ),
-                    trailing: isWatched == false
-                        ? Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.red,
-                            ),
-                            padding: EdgeInsets.all(5),
-                            child: Text(
-                              'Remaining',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 10),
-                            ),
-                          )
-                        : Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                          ),
-                    title: Text('Push-ups'),
-                    subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Time: ',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                '2 mins',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                'Burns: ',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                '65 Calories',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ]),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                    leading: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                'https://images.medicinenet.com/images/article/main_image/what-are-push-ups-for.jpg'),
-                            fit: BoxFit.cover),
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                            color: isWatched == false
-                                ? Color.fromRGBO(65, 65, 67, 1)
-                                : Color.fromRGBO(239, 65, 54, 1),
-                            width: 2),
-                      ),
-                    ),
-                    trailing: isWatched == false
-                        ? Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.red,
-                            ),
-                            padding: EdgeInsets.all(5),
-                            child: Text(
-                              'Remaining',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 10),
-                            ),
-                          )
-                        : Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                          ),
-                    title: Text('Push-ups'),
-                    subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Time: ',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                '2 mins',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                'Burns: ',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                '65 Calories',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ]),
                   ),
                 )
               ],
@@ -456,12 +218,9 @@ class _WorkOutScreenState extends State<WorkOutScreen> {
               child: gradientButton("Start Workout", () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => WorkOutExcercise(),
+                    builder: (context) => Player(widget.workOutUrl),
                   ),
                 );
-                setState(() {
-                  isWatched = true;
-                });
               }),
             ),
           ),

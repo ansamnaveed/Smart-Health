@@ -51,7 +51,8 @@ class Wrapper extends StatelessWidget {
 
     if (user != null) {
       return EndIntro();
+    } else {
+      return GetStarted();
     }
-    return GetStarted();
   }
 }

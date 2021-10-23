@@ -41,11 +41,11 @@ class _FavoriteWorkOutState extends State<FavoriteWorkOut> {
               itemBuilder: (_, i) {
                 return InkWell(
                   onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => WorkOutScreen(),
-                      ),
-                    );
+                    // Navigator.of(context).push(
+                    //   MaterialPageRoute(
+                    //     builder: (context) => WorkOutScreen(),
+                    //   ),
+                    // );
                   },
                   child: Container(
                     margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
