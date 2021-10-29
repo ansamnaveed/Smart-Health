@@ -96,10 +96,11 @@ class _SignUpState extends State<SignUp> {
                               )
                             ]),
                         child: TextFormField(
-                          autovalidateMode: AutovalidateMode.always,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           cursorColor: Colors.black,
-                          validator: (input) =>
-                              input.isValidEmail() ? null : "Check your email",
+                          validator: (input) => input.isValidEmail()
+                              ? null
+                              : "   Check your email",
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(

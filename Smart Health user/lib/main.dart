@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fireauth/Models/auth_services.dart';
 import 'package:fireauth/Views/Dashboard/dashboard.dart';
+import 'package:fireauth/Views/trainer/Dashboard/trainer_dashboard.dart';
 import 'package:fireauth/getstarted.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -50,8 +52,43 @@ class Wrapper extends StatelessWidget {
     final user = context.watch<User>();
 
     if (user != null) {
-      return EndIntro();
+      // return EndIntro();
+      return Selection();
     }
     return GetStarted();
+  }
+}
+
+class Selection extends StatefulWidget {
+  const Selection({Key key}) : super(key: key);
+
+  @override
+  _SelectionState createState() => _SelectionState();
+}
+
+class _SelectionState extends State<Selection> {
+  String role;
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  void getData() async {
+    final User user = auth.currentUser;
+    DocumentSnapshot variable = await FirebaseFirestore.instance
+        .collection("${user.email}'s Account")
+        .doc("Account")
+        .get();
+    setState(() {
+      role = variable['role'];
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  Widget build(BuildContext context) {
+    return role == 'trainer' ? TrainerDashboard() : EndIntro();
   }
 }
