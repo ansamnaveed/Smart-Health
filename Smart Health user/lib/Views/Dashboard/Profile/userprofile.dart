@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fireauth/Views/SignInScreen/signin.dart';
+import 'package:fireauth/Views/trainer/Dashboard/trainer_dashboard.dart';
 import 'package:fireauth/Widgets/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -319,6 +320,13 @@ class _UserProfileState extends State<UserProfile> {
                                                 'about': '',
                                                 'description': ''
                                               },
+                                            ),
+                                          );
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  TrainerDashboard(),
                                             ),
                                           );
                                         },

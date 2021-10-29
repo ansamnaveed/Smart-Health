@@ -181,8 +181,7 @@ class _EditProfileState extends State<EditProfile> {
                   fontWeight: FontWeight.bold),
             ),
           ),
-          body: user.email == null
-              //  || password == null
+          body: user.email == null || fileUrl == null
               ? Center(
                   child: Icon(
                     Fontelico.spin6,
