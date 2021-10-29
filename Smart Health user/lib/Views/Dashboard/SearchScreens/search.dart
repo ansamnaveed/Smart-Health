@@ -113,7 +113,8 @@ class _SearchState extends State<Search> {
                 Container(
                     width: double.infinity,
                     height: 150,
-                    child: StreamBuilder(
+                    child: 
+                    StreamBuilder(
                       stream: _productss.snapshots(),
                       builder: (context,
                           AsyncSnapshot<QuerySnapshot> streamSnapshot) {

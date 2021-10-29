@@ -96,7 +96,10 @@ class _SignUpState extends State<SignUp> {
                               )
                             ]),
                         child: TextFormField(
+                          autovalidateMode: AutovalidateMode.always,
                           cursorColor: Colors.black,
+                          validator: (input) =>
+                              input.isValidEmail() ? null : "Check your email",
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
@@ -248,7 +251,7 @@ class _SignUpState extends State<SignUp> {
                             disabledBorder: InputBorder.none,
                             contentPadding:
                                 EdgeInsets.symmetric(horizontal: sx(20)),
-                            hintText: "Password",
+                            hintText: "Minimum 6 Characters",
                             hintStyle: TextStyle(
                               color: Color.fromRGBO(118, 129, 150, 1),
                             ),
@@ -288,7 +291,8 @@ class _SignUpState extends State<SignUp> {
                                       'password': password,
                                       'imageUrl': 'null',
                                       'firstname': fnameController.text,
-                                      'lastname': lnameController.text
+                                      'lastname': lnameController.text,
+                                      'role': 'trainee'
                                     },
                                   );
                                   if (User == null) {
@@ -306,68 +310,6 @@ class _SignUpState extends State<SignUp> {
                             }
                           }
                         },
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Container(
-                            width: sx(75),
-                            height: sx(75),
-                            child: ElevatedButton(
-                              child: Icon(
-                                Icons.facebook_rounded,
-                                color: Colors.blue,
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                primary: Color.fromRGBO(255, 255, 255, 1),
-                              ),
-                              onPressed: () {},
-                            ),
-                          ),
-                          Container(
-                            width: sx(75),
-                            height: sx(75),
-                            child: ElevatedButton(
-                              child: Icon(
-                                MdiIcons.google,
-                                color: Colors.redAccent,
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                primary: Color.fromRGBO(255, 255, 255, 1),
-                              ),
-                              onPressed: () {},
-                            ),
-                          ),
-                          Container(
-                            width: sx(75),
-                            height: sx(75),
-                            child: ElevatedButton(
-                              child: Icon(
-                                MdiIcons.twitter,
-                                color: Colors.lightBlueAccent,
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                primary: Color.fromRGBO(255, 255, 255, 1),
-                              ),
-                              onPressed: () {},
-                            ),
-                          ),
-                        ],
                       ),
                     ),
                   ],

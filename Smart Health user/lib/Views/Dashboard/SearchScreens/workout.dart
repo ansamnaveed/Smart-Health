@@ -5,6 +5,7 @@ import 'package:fireauth/Widgets/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:fluttericon/fontelico_icons.dart';
 import 'package:relative_scale/relative_scale.dart';
 
 import 'workoutexcercise.dart';
@@ -114,101 +115,101 @@ class _WorkOutScreenState extends State<WorkOutScreen> {
               ),
             ],
           ),
-          body: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: Colors.black38,
-                          blurRadius: 2.0,
-                          spreadRadius: -1,
-                          offset: Offset(1, 1),
-                        )
-                      ],
-                      borderRadius: BorderRadius.circular(10),
-                      image: DecorationImage(
-                        image: NetworkImage(widget.thumbUrl),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      alignment: Alignment.bottomLeft,
-                      width: double.infinity,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: <Color>[
-                            Colors.transparent,
-                            Color.fromRGBO(239, 66, 54, .5),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  color: Color.fromRGBO(239, 65, 54, .75),
-                  child: ListTile(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              TrainerDescription(widget.uploader),
-                        ),
-                      );
-                    },
-                    title: Text(fullname),
-                    subtitle: Text(about),
-                    leading: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: NetworkImage(imageurl), fit: BoxFit.cover),
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                            color: isWatched == false
-                                ? Color.fromRGBO(65, 65, 67, 1)
-                                : Color.fromRGBO(239, 65, 54, 1),
-                            width: 2),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(10),
+          body: imageurl == null
+              ? Center(
+                  child: Icon(Fontelico.spin6),
+                )
+              : SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Duration:',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            boxShadow: <BoxShadow>[
+                              BoxShadow(
+                                color: Colors.black38,
+                                blurRadius: 2.0,
+                                spreadRadius: -1,
+                                offset: Offset(1, 1),
+                              )
+                            ],
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                              image: NetworkImage(widget.thumbUrl),
+                              fit: BoxFit.cover,
                             ),
                           ),
-                          Text(
-                            "${widget.duration} min",
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            alignment: Alignment.bottomLeft,
+                            width: double.infinity,
+                            height: 150,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: <Color>[
+                                  Colors.transparent,
+                                  Color.fromRGBO(239, 66, 54, .5),
+                                ],
+                              ),
+                            ),
                           ),
-                        ],
+                        ),
                       ),
-                      Text(widget.description),
+                      Container(
+                        color: Color.fromRGBO(239, 65, 54, .75),
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    TrainerDescription(widget.uploader),
+                              ),
+                            );
+                          },
+                          title: Text(fullname),
+                          subtitle: Text(about),
+                          leading: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: NetworkImage(imageurl),
+                                  fit: BoxFit.cover),
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  'Duration:',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  "${widget.duration} min",
+                                ),
+                              ],
+                            ),
+                            Text(widget.description),
+                          ],
+                        ),
+                      )
                     ],
                   ),
-                )
-              ],
-            ),
-          ),
+                ),
           floatingActionButton: FloatingActionButton.extended(
             onPressed: () {},
             backgroundColor: Colors.transparent,

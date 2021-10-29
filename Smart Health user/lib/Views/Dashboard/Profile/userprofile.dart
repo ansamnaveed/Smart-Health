@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fireauth/Views/SignInScreen/signin.dart';
 import 'package:fireauth/Widgets/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -130,21 +131,7 @@ class _UserProfileState extends State<UserProfile> {
                             ),
                           );
                         },
-                        title: Text('My Trainer'),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 15,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Divider(
-                        height: 0,
-                      ),
-                      ListTile(
-                        onTap: () {
-                          getData();
-                        },
-                        title: Text('My workout'),
+                        title: Text('My Trainers'),
                         trailing: Icon(
                           Icons.arrow_forward_ios_rounded,
                           size: 15,
@@ -212,7 +199,177 @@ class _UserProfileState extends State<UserProfile> {
                         height: 0,
                       ),
                       ListTile(
-                        title: Text('Invite Friends'),
+                        onTap: () {
+                          showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              contentPadding: EdgeInsets.all(20),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20),
+                                ),
+                              ),
+                              // contentPadding: EdgeInsets.all(0),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: <Color>[
+                                          Color.fromRGBO(65, 65, 67, 1),
+                                          Color.fromRGBO(239, 66, 54, .75),
+                                        ],
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        FontAwesome5.exclamation,
+                                        color: Colors.white,
+                                        size: 40,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Text(
+                                      'Are you sure you want to be a Trainer?',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Text(
+                                      '* Note: You will not be able to a trainee again.',
+                                      style: TextStyle(
+                                          color: Colors.red, fontSize: 12),
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      OutlineGradientButton(
+                                        padding: EdgeInsets.zero,
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                        elevation: 5,
+                                        radius: Radius.circular(10),
+                                        backgroundColor: Colors.white,
+                                        child: Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              3.5,
+                                          height: sy(30),
+                                          alignment: Alignment.center,
+                                          child: GradientText(
+                                            'No',
+                                            gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                              colors: <Color>[
+                                                Color.fromRGBO(65, 65, 67, 1),
+                                                Color.fromRGBO(239, 66, 54, 1),
+                                              ],
+                                            ),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: <Color>[
+                                            Color.fromRGBO(65, 65, 67, 1),
+                                            Color.fromRGBO(239, 66, 54, 1),
+                                          ],
+                                        ),
+                                        strokeWidth: 2,
+                                      ),
+                                      Spacer(),
+                                      OutlineGradientButton(
+                                        onTap: () async {
+                                          await FirebaseFirestore.instance
+                                              .collection(
+                                                  "${user.email}'s Account")
+                                              .doc("Account")
+                                              .update(
+                                            {
+                                              "role": 'trainer',
+                                            },
+                                          ).then(
+                                            (value) => FirebaseFirestore
+                                                .instance
+                                                .collection('All Trainers')
+                                                .doc(user.email)
+                                                .set(
+                                              {
+                                                'fullname': fullname,
+                                                'dp': fileUrl,
+                                                'email': user.email,
+                                                'about': '',
+                                                'description': ''
+                                              },
+                                            ),
+                                          );
+                                        },
+                                        elevation: 5,
+                                        padding: EdgeInsets.zero,
+                                        radius: Radius.circular(30),
+                                        backgroundColor: Colors.white,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            gradient: LinearGradient(
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                              colors: <Color>[
+                                                Color.fromRGBO(65, 65, 67, 1),
+                                                Color.fromRGBO(239, 66, 54, 1),
+                                              ],
+                                            ),
+                                          ),
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              3.5,
+                                          height: sy(30),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            'Yes',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: <Color>[
+                                            Color.fromRGBO(65, 65, 67, 1),
+                                            Color.fromRGBO(239, 66, 54, 1),
+                                          ],
+                                        ),
+                                        strokeWidth: 2,
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        title: Text('Become a Trainer'),
                         trailing: Icon(
                           Icons.arrow_forward_ios_rounded,
                           size: 15,
@@ -390,6 +547,12 @@ class _UserProfileState extends State<UserProfile> {
                                           onTap: () {
                                             FirebaseAuth.instance.signOut();
                                             Navigator.pop(context);
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => SignIn(),
+                                              ),
+                                            );
                                           },
                                           elevation: 5,
                                           padding: EdgeInsets.zero,

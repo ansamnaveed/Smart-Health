@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 
@@ -16,11 +14,16 @@ Map<int, Color> colorMap = {
   800: Color.fromRGBO(239, 66, 54, .9),
   900: Color.fromRGBO(239, 66, 54, 1),
 };
-String image = "assets/images/icon-user.png";
-
-File profilePicture;
 int bottomIndex;
-bool isWatched = false;
+
+extension EmailValidator on String {
+  bool isValidEmail() {
+    return RegExp(
+            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+        .hasMatch(this);
+  }
+}
+
 Widget gradientButton(String text, Function onPressed) {
   return GradientButton(
     child: Text(
