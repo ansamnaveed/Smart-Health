@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fireauth/Views/Dashboard/Chat/chat_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/fontelico_icons.dart';
@@ -16,16 +15,19 @@ class TrainerDescription extends StatefulWidget {
 }
 
 class _TrainerDescriptionState extends State<TrainerDescription> {
-  bool isFollow;
+  bool isFollow = false;
   bool istpped = false;
 
   final FirebaseAuth auth = FirebaseAuth.instance;
 
+  String username;
+  String userdp;
   String email;
   String fullname;
   String imageurl;
   String about;
   String description;
+  String status;
 
   void getData() async {
     DocumentSnapshot account = await FirebaseFirestore.instance
@@ -36,13 +38,20 @@ class _TrainerDescriptionState extends State<TrainerDescription> {
         .collection("${widget.uploader}'s Account")
         .doc("Trainer")
         .get();
+    DocumentSnapshot trainee = await FirebaseFirestore.instance
+        .collection("${user.email}'s Account")
+        .doc("Account")
+        .get();
     setState(
       () {
+        username = "${trainee['firstname']} ${trainee['lastname']}";
+        userdp = trainee['imageUrl'];
         email = account['email'];
         fullname = "${account['firstname']} ${account['lastname']}";
         imageurl = account['imageUrl'];
         about = trainer['about'];
         description = trainer['description'];
+        status = account['status'];
       },
     );
   }
@@ -55,20 +64,14 @@ class _TrainerDescriptionState extends State<TrainerDescription> {
 
   User user = FirebaseAuth.instance.currentUser;
 
-  void checkFollow() async {
+  checkFollow() async {
     DocumentSnapshot account = await FirebaseFirestore.instance
         .collection("${widget.uploader}'s Followers")
         .doc(user.email)
         .get();
-    if (account == null) {
-      setState(() {
-        isFollow = false;
-      });
-    } else {
-      setState(() {
-        isFollow = true;
-      });
-    }
+    setState(() {
+      isFollow = account.exists;
+    });
   }
 
   @override
@@ -150,191 +153,45 @@ class _TrainerDescriptionState extends State<TrainerDescription> {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            OutlineGradientButton(
-                              padding: EdgeInsets.zero,
-                              onTap: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => ChatPage(),
-                                  ),
-                                );
-                              },
-                              elevation: 5,
-                              radius: Radius.circular(30),
-                              backgroundColor: Colors.white,
-                              child: Container(
-                                width: MediaQuery.of(context).size.width / 2.2,
-                                height: sy(30),
-                                alignment: Alignment.center,
-                                child: GradientText(
-                                  'Message',
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: <Color>[
-                                      Color.fromRGBO(65, 65, 67, 1),
-                                      Color.fromRGBO(239, 66, 54, 1),
-                                    ],
-                                  ),
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: <Color>[
-                                  Color.fromRGBO(65, 65, 67, 1),
-                                  Color.fromRGBO(239, 66, 54, 1),
-                                ],
-                              ),
-                              strokeWidth: 2,
-                            ),
-                            Spacer(),
-                            isFollow == true
-                                ? OutlineGradientButton(
-                                    onTap: () async {
-                                      setState(() {
-                                        istpped = true;
-                                      });
-                                      await FirebaseFirestore.instance
-                                          .collection("$email's Followers")
-                                          .doc(user.email)
-                                          .delete()
-                                          .then(
-                                            (value) => FirebaseFirestore
-                                                .instance
-                                                .collection(
-                                                    "${user.email}'s trainers")
-                                                .doc(email)
-                                                .delete()
-                                                .then(
-                                                  (value) => setState(
-                                                    () {
-                                                      isFollow = false;
-                                                    },
-                                                  ),
-                                                ),
-                                          )
-                                          .then(
-                                            (value) => setState(
-                                              () {
-                                                istpped = false;
-                                              },
-                                            ),
-                                          );
-                                    },
-                                    elevation: 5,
-                                    padding: EdgeInsets.zero,
-                                    radius: Radius.circular(30),
-                                    backgroundColor: Colors.white,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(30),
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: <Color>[
-                                            Color.fromRGBO(65, 65, 67, 1),
-                                            Color.fromRGBO(239, 66, 54, 1),
-                                          ],
-                                        ),
-                                      ),
-                                      width: MediaQuery.of(context).size.width /
-                                          2.2,
-                                      height: sy(30),
-                                      alignment: Alignment.center,
-                                      child: istpped == true
-                                          ? Icon(Fontelico.spin6)
-                                          : Text(
-                                              'Unfollow',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.white),
-                                            ),
-                                    ),
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: <Color>[
-                                        Color.fromRGBO(65, 65, 67, 1),
-                                        Color.fromRGBO(239, 66, 54, 1),
-                                      ],
-                                    ),
-                                    strokeWidth: 2,
-                                  )
-                                : OutlineGradientButton(
-                                    padding: EdgeInsets.zero,
-                                    onTap: () async {
-                                      setState(() {
-                                        istpped = true;
-                                      });
-                                      User user =
-                                          FirebaseAuth.instance.currentUser;
-                                      await FirebaseFirestore.instance
-                                          .collection("$email's Followers")
-                                          .doc(user.email)
-                                          .set(
-                                            {
-                                              'email': user.email,
-                                            },
-                                          )
-                                          .then(
-                                            (value) => FirebaseFirestore
-                                                .instance
-                                                .collection(
-                                                    "${user.email}'s trainers")
-                                                .doc(email)
-                                                .set(
-                                              {
-                                                'email': email,
-                                                'name': fullname,
-                                                'dp': imageurl,
-                                                'about': about,
-                                                'description': description,
-                                              },
-                                            ).then(
+                        child: isFollow == true
+                            ? OutlineGradientButton(
+                                onTap: () async {
+                                  setState(() {
+                                    istpped = true;
+                                  });
+                                  await FirebaseFirestore.instance
+                                      .collection("$email's Followers")
+                                      .doc(user.email)
+                                      .delete()
+                                      .then(
+                                        (value) => FirebaseFirestore.instance
+                                            .collection(
+                                                "${user.email}'s trainers")
+                                            .doc(email)
+                                            .delete()
+                                            .then(
                                               (value) => setState(
                                                 () {
-                                                  isFollow = true;
+                                                  isFollow = false;
                                                 },
                                               ),
                                             ),
-                                          )
-                                          .then(
-                                            (value) => setState(
-                                              () {
-                                                istpped = false;
-                                              },
-                                            ),
-                                          );
-                                    },
-                                    elevation: 5,
-                                    radius: Radius.circular(30),
-                                    backgroundColor: Colors.white,
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width /
-                                          2.2,
-                                      height: sy(30),
-                                      alignment: Alignment.center,
-                                      child: istpped == true
-                                          ? Icon(Fontelico.spin6)
-                                          : GradientText(
-                                              'Follow',
-                                              gradient: LinearGradient(
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                                colors: <Color>[
-                                                  Color.fromRGBO(65, 65, 67, 1),
-                                                  Color.fromRGBO(
-                                                      239, 66, 54, 1),
-                                                ],
-                                              ),
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                    ),
+                                      )
+                                      .then(
+                                        (value) => setState(
+                                          () {
+                                            istpped = false;
+                                          },
+                                        ),
+                                      );
+                                },
+                                elevation: 5,
+                                padding: EdgeInsets.zero,
+                                radius: Radius.circular(30),
+                                backgroundColor: Colors.white,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30),
                                     gradient: LinearGradient(
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
@@ -343,10 +200,110 @@ class _TrainerDescriptionState extends State<TrainerDescription> {
                                         Color.fromRGBO(239, 66, 54, 1),
                                       ],
                                     ),
-                                    strokeWidth: 2,
                                   ),
-                          ],
-                        ),
+                                  width:
+                                      MediaQuery.of(context).size.width / 2.2,
+                                  height: sy(30),
+                                  alignment: Alignment.center,
+                                  child: istpped == true
+                                      ? Icon(Fontelico.spin6)
+                                      : Text(
+                                          'Unfollow',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white),
+                                        ),
+                                ),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: <Color>[
+                                    Color.fromRGBO(65, 65, 67, 1),
+                                    Color.fromRGBO(239, 66, 54, 1),
+                                  ],
+                                ),
+                                strokeWidth: 2,
+                              )
+                            : OutlineGradientButton(
+                                padding: EdgeInsets.zero,
+                                onTap: () async {
+                                  setState(() {
+                                    istpped = true;
+                                  });
+                                  User user = FirebaseAuth.instance.currentUser;
+                                  await FirebaseFirestore.instance
+                                      .collection("$email's Followers")
+                                      .doc(user.email)
+                                      .set(
+                                        {
+                                          'email': user.email,
+                                          'fullname': username,
+                                          'userdp': userdp,
+                                        },
+                                      )
+                                      .then(
+                                        (value) => FirebaseFirestore.instance
+                                            .collection(
+                                                "${user.email}'s trainers")
+                                            .doc(email)
+                                            .set(
+                                          {
+                                            'email': email,
+                                            'name': fullname,
+                                            'dp': imageurl,
+                                            'about': about,
+                                            'description': description,
+                                          },
+                                        ).then(
+                                          (value) => setState(
+                                            () {
+                                              isFollow = true;
+                                            },
+                                          ),
+                                        ),
+                                      )
+                                      .then(
+                                        (value) => setState(
+                                          () {
+                                            istpped = false;
+                                          },
+                                        ),
+                                      );
+                                },
+                                elevation: 5,
+                                radius: Radius.circular(30),
+                                backgroundColor: Colors.white,
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width / 2.2,
+                                  height: sy(30),
+                                  alignment: Alignment.center,
+                                  child: istpped == true
+                                      ? Icon(Fontelico.spin6)
+                                      : GradientText(
+                                          'Follow',
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: <Color>[
+                                              Color.fromRGBO(65, 65, 67, 1),
+                                              Color.fromRGBO(239, 66, 54, 1),
+                                            ],
+                                          ),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                ),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: <Color>[
+                                    Color.fromRGBO(65, 65, 67, 1),
+                                    Color.fromRGBO(239, 66, 54, 1),
+                                  ],
+                                ),
+                                strokeWidth: 2,
+                              ),
                       ),
                     ],
                   ),

@@ -1,12 +1,12 @@
 import 'package:fireauth/Models/auth_services.dart';
-import 'package:fireauth/Views/Dashboard/dashboard.dart';
 import 'package:fireauth/Views/introscreens/intro.dart';
 import 'package:fireauth/Widgets/theme.dart';
+import 'package:fireauth/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:outline_gradient_button/outline_gradient_button.dart';
 import 'package:relative_scale/relative_scale.dart';
 import 'package:provider/provider.dart';
@@ -167,26 +167,116 @@ class _SignInState extends State<SignIn> {
                           final String password =
                               passwordController.text.trim();
 
-                          if (email.isEmpty) {
-                            print('Email is empty');
-                          } else {
-                            if (password.isEmpty) {
-                              print('password is empty');
+                          try {
+                            if (email.isEmpty) {
+                              print('Email is empty');
                             } else {
-                              context
-                                  .read<AuthService>()
-                                  .login(email, password)
-                                  .then(
-                                (User user) {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EndIntro(),
-                                    ),
-                                  );
-                                },
-                              );
+                              if (password.isEmpty) {
+                                print('password is empty');
+                              } else {
+                                context
+                                    .read<AuthService>()
+                                    .login(email, password)
+                                    .then(
+                                  (User user) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => Selection(),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
                             }
+                          } catch (e) {
+                            showDialog<String>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                contentPadding: EdgeInsets.all(20),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(20),
+                                  ),
+                                ),
+                                // contentPadding: EdgeInsets.all(0),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(50),
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: <Color>[
+                                            Color.fromRGBO(65, 65, 67, 1),
+                                            Color.fromRGBO(239, 66, 54, .75),
+                                          ],
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Icon(
+                                          FontAwesome5.exclamation,
+                                          color: Colors.white,
+                                          size: 40,
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 8.0),
+                                      child: Text(
+                                        e.message,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16),
+                                      ),
+                                    ),
+                            OutlineGradientButton(
+                                      padding: EdgeInsets.zero,
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                      elevation: 5,
+                                      radius: Radius.circular(10),
+                                      backgroundColor: Colors.white,
+                                      child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                3.5,
+                                        height: sy(30),
+                                        alignment: Alignment.center,
+                                        child: GradientText(
+                                          'Ok',
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: <Color>[
+                                              Color.fromRGBO(65, 65, 67, 1),
+                                              Color.fromRGBO(239, 66, 54, 1),
+                                            ],
+                                          ),
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: <Color>[
+                                          Color.fromRGBO(65, 65, 67, 1),
+                                          Color.fromRGBO(239, 66, 54, 1),
+                                        ],
+                                      ),
+                                      strokeWidth: 2,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
                           }
                         },
                       ),

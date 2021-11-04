@@ -17,7 +17,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -52,7 +51,6 @@ class Wrapper extends StatelessWidget {
     final user = context.watch<User>();
 
     if (user != null) {
-      // return EndIntro();
       return Selection();
     }
     return GetStarted();

@@ -4,13 +4,11 @@ import 'package:fireauth/Views/player.dart';
 import 'package:fireauth/Widgets/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:fluttericon/fontelico_icons.dart';
 import 'package:relative_scale/relative_scale.dart';
 
-import 'workoutexcercise.dart';
-
 class WorkOutScreen extends StatefulWidget {
+  final String dateTime;
   final String description;
   final String duration;
   final String name;
@@ -18,6 +16,7 @@ class WorkOutScreen extends StatefulWidget {
   final String workOutUrl;
   final String uploader;
   const WorkOutScreen(
+    this.dateTime,
     this.description,
     this.duration,
     this.name,
@@ -39,6 +38,9 @@ class _WorkOutScreenState extends State<WorkOutScreen> {
   String about;
   String description;
 
+  bool isLiked = false;
+  bool istapped = false;
+
   void getData() async {
     DocumentSnapshot account = await FirebaseFirestore.instance
         .collection("${widget.uploader}'s Account")
@@ -57,15 +59,25 @@ class _WorkOutScreenState extends State<WorkOutScreen> {
         description = trainer['description'];
       },
     );
-    // print("email=================================>${widget.uploader}");
-    // print("fullname=================================>$fullname");
-    // print("about=================================>$about");
+  }
+
+  checkLiked() async {
+    DocumentSnapshot likes = await FirebaseFirestore.instance
+        .collection("${user.email}'s Liked Workouts")
+        .doc(widget.dateTime)
+        .get();
+    setState(() {
+      isLiked = likes.exists;
+    });
   }
 
   void initState() {
     super.initState();
     getData();
+    checkLiked();
   }
+
+  User user = FirebaseAuth.instance.currentUser;
 
   Widget build(BuildContext context) {
     return RelativeBuilder(
@@ -94,24 +106,68 @@ class _WorkOutScreenState extends State<WorkOutScreen> {
             actions: [
               Padding(
                 padding: EdgeInsets.only(top: 20, right: 20),
-                child: RatingBar(
-                  initialRating: 0,
-                  direction: Axis.horizontal,
-                  itemCount: 1,
-                  itemSize: 25,
-                  ratingWidget: RatingWidget(
-                    full: Icon(
-                      Icons.favorite_rounded,
-                      color: Color.fromRGBO(239, 65, 54, 1),
-                    ),
-                    empty: Icon(
-                      Icons.favorite_border_rounded,
-                      color: Color.fromRGBO(65, 65, 67, 1),
-                    ),
-                    half: null,
-                  ),
-                  onRatingUpdate: (double value) {},
-                ),
+                child: isLiked == true
+                    ? IconButton(
+                        onPressed: () async {
+                          setState(() {
+                            istapped = true;
+                          });
+                          await FirebaseFirestore.instance
+                              .collection("${user.email}'s Liked Workouts")
+                              .doc(widget.dateTime)
+                              .delete()
+                              .then(
+                                (value) => setState(
+                                  () {
+                                    isLiked = false;
+                                  },
+                                ),
+                              )
+                              .then(
+                                (value) => setState(
+                                  () {
+                                    istapped = false;
+                                  },
+                                ),
+                              );
+                        },
+                        icon: Icon(Icons.favorite_rounded, color: Colors.red),
+                      )
+                    : IconButton(
+                        onPressed: () async {
+                          setState(() {
+                            istapped = true;
+                          });
+                          await FirebaseFirestore.instance
+                              .collection("${user.email}'s Liked Workouts")
+                              .doc(widget.dateTime)
+                              .set({
+                                "Date&Time": widget.dateTime,
+                                "description": widget.description,
+                                "duration": widget.duration,
+                                "name": widget.name,
+                                "thumbUrl": widget.thumbUrl,
+                                "uploader": widget.uploader,
+                                "workOutUrl": widget.workOutUrl,
+                              })
+                              .then(
+                                (value) => setState(
+                                  () {
+                                    isLiked = true;
+                                  },
+                                ),
+                              )
+                              .then(
+                                (value) => setState(
+                                  () {
+                                    istapped = false;
+                                  },
+                                ),
+                              );
+                        },
+                        icon: Icon(Icons.favorite_border_rounded,
+                            color: Colors.grey),
+                      ),
               ),
             ],
           ),

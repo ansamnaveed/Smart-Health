@@ -14,7 +14,6 @@ import 'package:outline_gradient_button/outline_gradient_button.dart';
 import 'package:relative_scale/relative_scale.dart';
 import 'Favorite/Favorite.dart';
 import 'MyTrainer/myTrainer.dart';
-import 'NotificationScreen/notification.dart';
 import 'Privacypolicy.dart';
 import 'editprofile.dart';
 import 'unlockPremium/unlock.dart';
@@ -133,25 +132,6 @@ class _UserProfileState extends State<UserProfile> {
                           );
                         },
                         title: Text('My Trainers'),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 15,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Divider(
-                        height: 0,
-                      ),
-                      ListTile(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NotificationScreen(),
-                            ),
-                          );
-                        },
-                        title: Text('Notifications'),
                         trailing: Icon(
                           Icons.arrow_forward_ios_rounded,
                           size: 15,
@@ -304,24 +284,40 @@ class _UserProfileState extends State<UserProfile> {
                                                   "${user.email}'s Account")
                                               .doc("Account")
                                               .update(
-                                            {
-                                              "role": 'trainer',
-                                            },
-                                          ).then(
-                                            (value) => FirebaseFirestore
-                                                .instance
-                                                .collection('All Trainers')
-                                                .doc(user.email)
-                                                .set(
-                                              {
-                                                'fullname': fullname,
-                                                'dp': fileUrl,
-                                                'email': user.email,
-                                                'about': '',
-                                                'description': ''
-                                              },
-                                            ),
-                                          );
+                                                {
+                                                  "role": 'trainer',
+                                                },
+                                              )
+                                              .then(
+                                                (value) => FirebaseFirestore
+                                                    .instance
+                                                    .collection('All Trainers')
+                                                    .doc(user.email)
+                                                    .set(
+                                                  {
+                                                    'fullname': fullname,
+                                                    'dp': fileUrl,
+                                                    'email': user.email,
+                                                    'about': '',
+                                                    'description': ''
+                                                  },
+                                                ),
+                                              )
+                                              .then(
+                                                (value) => FirebaseFirestore
+                                                    .instance
+                                                    .collection(
+                                                        "${user.email}'s Account")
+                                                    .doc("Trainer")
+                                                    .set(
+                                                  {
+                                                    "about":
+                                                        "----no about set----",
+                                                    "description":
+                                                        "----description----",
+                                                  },
+                                                ),
+                                              );
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(

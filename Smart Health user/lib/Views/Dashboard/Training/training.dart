@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fireauth/Views/Dashboard/Profile/MyTrainer/trainerdescription.dart';
+import 'package:fireauth/Views/Dashboard/SearchScreens/workout.dart';
 import 'package:fireauth/Views/player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:fluttericon/rpg_awesome_icons.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:relative_scale/relative_scale.dart';
 
@@ -22,7 +24,7 @@ class _TrainingState extends State<Training> {
   @override
   void initState() {
     super.initState();
-    Timer.periodic(Duration(seconds: 2), (Timer timer) {
+    Timer.periodic(Duration(seconds: 3), (Timer timer) {
       if (_currentPage < 3) {
         _currentPage++;
       } else {
@@ -30,11 +32,11 @@ class _TrainingState extends State<Training> {
       }
 
       if (_pageController.hasClients)
-      _pageController.animateToPage(
-        _currentPage,
-        duration: Duration(milliseconds: 800),
-        curve: Curves.easeIn,
-      );
+        _pageController.animateToPage(
+          _currentPage,
+          duration: Duration(seconds: 1),
+          curve: Curves.easeIn,
+        );
     });
   }
 
@@ -59,29 +61,6 @@ class _TrainingState extends State<Training> {
               ),
               style: TextStyle(fontSize: sy(24), fontWeight: FontWeight.bold),
             ),
-            actions: [
-              Padding(
-                padding: EdgeInsets.only(top: 20, right: 20),
-                child: RatingBar(
-                  initialRating: 0,
-                  direction: Axis.horizontal,
-                  itemCount: 1,
-                  itemSize: 25,
-                  ratingWidget: RatingWidget(
-                    full: Icon(
-                      Icons.favorite_rounded,
-                      color: Color.fromRGBO(239, 65, 54, 1),
-                    ),
-                    empty: Icon(
-                      Icons.favorite_border_rounded,
-                      color: Color.fromRGBO(65, 65, 67, 1),
-                    ),
-                    half: null,
-                  ),
-                  onRatingUpdate: (double value) {},
-                ),
-              ),
-            ],
           ),
           body: SingleChildScrollView(
             physics: BouncingScrollPhysics(),
@@ -118,6 +97,9 @@ class _TrainingState extends State<Training> {
                                   image: DecorationImage(
                                       image: NetworkImage(
                                           documentSnapshot['thumb']),
+                                      // colorFilter: ColorFilter.mode(
+                                      //     Colors.white.withOpacity(0.2),
+                                      //     BlendMode.dstATop),
                                       fit: BoxFit.fill),
                                   borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(10),
@@ -129,92 +111,92 @@ class _TrainingState extends State<Training> {
                                 // height: 150,
                                 width: double.infinity,
                                 child: Container(
-                                  padding: EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(10),
-                                      topRight: Radius.circular(50),
-                                      bottomRight: Radius.circular(10),
-                                      bottomLeft: Radius.circular(10),
-                                    ),
-                                    gradient: LinearGradient(
-                                      begin: Alignment.topCenter,
-                                      end: Alignment.bottomCenter,
-                                      colors: <Color>[
-                                        Colors.transparent,
-                                        Color.fromRGBO(239, 66, 54, .5),
-                                      ],
-                                    ),
-                                  ),
-                                  width: double.infinity,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        documentSnapshot['name'],
-                                        style: TextStyle(color: Colors.white),
+                                    alignment: Alignment.bottomCenter,
+                                    padding: EdgeInsets.all(20),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(10),
+                                        topRight: Radius.circular(50),
+                                        bottomRight: Radius.circular(10),
+                                        bottomLeft: Radius.circular(10),
                                       ),
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 10),
-                                        child: Text(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: <Color>[
+                                          Colors.transparent,
+                                          Color.fromRGBO(239, 66, 54, .5),
+                                        ],
+                                      ),
+                                    ),
+                                    width: double.infinity,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10),
+                                          child: Text(
+                                            documentSnapshot['name'],
+                                            style: TextStyle(
+                                                color: Color.fromRGBO(
+                                                    239, 66, 54, .5),
+                                                fontSize: 16,
+                                                shadows: <BoxShadow>[
+                                                  BoxShadow(
+                                                    color: Colors.black38,
+                                                    blurRadius: 1.0,
+                                                    spreadRadius: 0,
+                                                    offset: Offset(1, 1),
+                                                  )
+                                                ],
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        Text(
                                           documentSnapshot['description'],
                                           style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 16),
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
                                         ),
-                                      ),
-                                      Spacer(),
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Icon(
-                                            Icons.timelapse,
-                                            size: 15,
-                                            color: Colors.white,
-                                          ),
-                                          Text(
-                                            ' ${documentSnapshot["duration"]} min',
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                          Spacer(),
-                                          Container(
-                                            width: 50,
-                                            height: 50,
-                                            child: ElevatedButton(
-                                              child: Icon(
-                                                Icons.play_arrow_rounded,
-                                                color: Colors.grey,
+                                        Spacer(),
+                                        ListTile(
+                                          dense: true,
+                                          contentPadding: EdgeInsets.zero,
+                                          subtitle: Row(
+                                            children: [
+                                              Icon(RpgAwesome.stopwatch,
+                                                  color: Colors.white),
+                                              Text(
+                                                " ${documentSnapshot['duration']} min",
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.white),
                                               ),
-                                              style: ElevatedButton.styleFrom(
-                                                padding: EdgeInsets.zero,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(50),
-                                                ),
-                                                primary: Color.fromRGBO(
-                                                    255, 255, 255, 1),
-                                              ),
-                                              onPressed: () {
-                                                Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        Player(
-                                                      documentSnapshot['video'],
-                                                    ),
+                                            ],
+                                          ),
+                                          trailing: InkWell(
+                                            child: Icon(
+                                                Icons
+                                                    .play_circle_filled_rounded,
+                                                size: 55,
+                                                color: Colors.white),
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) => Player(
+                                                    documentSnapshot['video'],
                                                   ),
-                                                );
-                                              },
-                                            ),
+                                                ),
+                                              );
+                                            },
                                           ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ),
+                                        )
+                                      ],
+                                    )),
                               );
                             },
                           );
@@ -232,8 +214,8 @@ class _TrainingState extends State<Training> {
                   child: Stack(
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(vertical: sy(10)),
-                        margin: EdgeInsets.symmetric(vertical: sy(20)),
+                        // padding: EdgeInsets.symmetric(vertical: sy(10)),
+                        margin: EdgeInsets.symmetric(vertical: sy(10)),
                         width: double.infinity,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
@@ -261,7 +243,7 @@ class _TrainingState extends State<Training> {
                       ),
                       Image(
                         image: AssetImage('assets/images/run1.png'),
-                        height: sy(95),
+                        height: sy(68),
                       )
                     ],
                   ),
@@ -274,15 +256,103 @@ class _TrainingState extends State<Training> {
                   ),
                 ),
                 Container(
+                  width: double.infinity,
+                  height: 150,
+                  child: StreamBuilder(
+                    stream: _productss.snapshots(),
+                    builder:
+                        (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                      if (streamSnapshot.hasData) {
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: streamSnapshot.data.docs.length,
+                          itemBuilder: (context, index) {
+                            final DocumentSnapshot documentSnapshot =
+                                streamSnapshot.data.docs[index];
+                            return InkWell(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => Player(
+                                      documentSnapshot['video'],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 5),
+                                decoration: BoxDecoration(
+                                  boxShadow: <BoxShadow>[
+                                    BoxShadow(
+                                      color: Colors.black38,
+                                      blurRadius: 2.0,
+                                      spreadRadius: -1,
+                                      offset: Offset(1, 1),
+                                    )
+                                  ],
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: DecorationImage(
+                                    image: NetworkImage(
+                                      documentSnapshot['thumb'],
+                                    ),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  alignment: Alignment.bottomLeft,
+                                  width: 100,
+                                  height: 150,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: <Color>[
+                                        Colors.transparent,
+                                        Color.fromRGBO(239, 66, 54, .5),
+                                      ],
+                                    ),
+                                  ),
+                                  child: Text(
+                                    documentSnapshot['name'],
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 12),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }
+
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Populer Workout',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Container(
+                    alignment: Alignment.centerLeft,
                     width: double.infinity,
                     height: 150,
-                    child: 
-                    StreamBuilder(
-                      stream: _productss.snapshots(),
+                    child: StreamBuilder(
+                      stream: _workOuts.snapshots(),
                       builder: (context,
                           AsyncSnapshot<QuerySnapshot> streamSnapshot) {
                         if (streamSnapshot.hasData) {
                           return ListView.builder(
+                            reverse: streamSnapshot.data.docs.length > 4
+                                ? true
+                                : false,
                             scrollDirection: Axis.horizontal,
                             itemCount: streamSnapshot.data.docs.length,
                             itemBuilder: (context, index) {
@@ -292,8 +362,14 @@ class _TrainingState extends State<Training> {
                                 onTap: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (context) => Player(
-                                        documentSnapshot['video'],
+                                      builder: (context) => WorkOutScreen(
+                                        documentSnapshot['Date&Time'],
+                                        documentSnapshot['description'],
+                                        documentSnapshot['duration'],
+                                        documentSnapshot['name'],
+                                        documentSnapshot['thumbUrl'],
+                                        documentSnapshot['workOutUrl'],
+                                        documentSnapshot['uploader'],
                                       ),
                                     ),
                                   );
@@ -313,13 +389,11 @@ class _TrainingState extends State<Training> {
                                     borderRadius: BorderRadius.circular(10),
                                     image: DecorationImage(
                                       image: NetworkImage(
-                                        documentSnapshot['thumb'],
-                                      ),
+                                          documentSnapshot["thumbUrl"]),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
                                   child: Container(
-                                    padding: EdgeInsets.all(10),
                                     alignment: Alignment.bottomLeft,
                                     width: 100,
                                     height: 150,
@@ -334,10 +408,148 @@ class _TrainingState extends State<Training> {
                                         ],
                                       ),
                                     ),
-                                    child: Text(
-                                      documentSnapshot['name'],
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 12),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                          bottomLeft: Radius.circular(10),
+                                          bottomRight: Radius.circular(10),
+                                        ),
+                                        color: Colors.white,
+                                      ),
+                                      padding: EdgeInsets.all(10),
+                                      width: double.infinity,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            documentSnapshot["name"],
+                                            style: TextStyle(
+                                                color: Colors.blue,
+                                                fontSize: 10),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.timelapse_rounded,
+                                                color: Colors.grey,
+                                                size: 10,
+                                              ),
+                                              Text(
+                                                "${documentSnapshot['duration']} min",
+                                                style: TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 10),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        }
+
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      },
+                    )),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Populer Trainers',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Container(
+                    width: double.infinity,
+                    height: 150,
+                    child: StreamBuilder(
+                      stream: _trainers.snapshots(),
+                      builder: (context,
+                          AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                        if (streamSnapshot.hasData) {
+                          return ListView.builder(
+                            reverse: streamSnapshot.data.docs.length > 4
+                                ? true
+                                : false,
+                            scrollDirection: Axis.horizontal,
+                            itemCount: streamSnapshot.data.docs.length,
+                            itemBuilder: (context, index) {
+                              final DocumentSnapshot documentSnapshot =
+                                  streamSnapshot.data.docs[index];
+                              return InkWell(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => TrainerDescription(
+                                        documentSnapshot['email'],
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 5),
+                                  decoration: BoxDecoration(
+                                    boxShadow: <BoxShadow>[
+                                      BoxShadow(
+                                        color: Colors.black38,
+                                        blurRadius: 2.0,
+                                        spreadRadius: -1,
+                                        offset: Offset(1, 1),
+                                      )
+                                    ],
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                      image:
+                                          NetworkImage(documentSnapshot["dp"]),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  child: Container(
+                                    alignment: Alignment.bottomLeft,
+                                    width: 100,
+                                    height: 150,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: <Color>[
+                                          Colors.transparent,
+                                          Color.fromRGBO(239, 66, 54, .5),
+                                        ],
+                                      ),
+                                    ),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                          bottomLeft: Radius.circular(10),
+                                          bottomRight: Radius.circular(10),
+                                        ),
+                                        color: Colors.white,
+                                      ),
+                                      padding: EdgeInsets.all(10),
+                                      width: double.infinity,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            documentSnapshot["fullname"],
+                                            style: TextStyle(
+                                                color: Colors.blue,
+                                                fontSize: 10),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -364,4 +576,8 @@ class _TrainingState extends State<Training> {
 
   CollectionReference _productss =
       FirebaseFirestore.instance.collection("slider");
+  CollectionReference _workOuts =
+      FirebaseFirestore.instance.collection("All Workouts");
+  CollectionReference _trainers =
+      FirebaseFirestore.instance.collection("All Trainers");
 }

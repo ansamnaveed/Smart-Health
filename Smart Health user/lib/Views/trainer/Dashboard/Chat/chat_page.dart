@@ -1,265 +1,393 @@
-import 'dart:async';
-import 'package:dash_chat/dash_chat.dart';
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_bubble/bubble_type.dart';
+import 'package:flutter_chat_bubble/chat_bubble.dart';
+import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_3.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({Key key}) : super(key: key);
+class TrainerChatScreen extends StatefulWidget {
+  final QueryDocumentSnapshot userMap;
+  final String chatRoomId;
+  TrainerChatScreen({@required this.chatRoomId, @required this.userMap});
 
   @override
-  _ChatPageState createState() => _ChatPageState();
+  _TrainerChatScreenState createState() =>
+      _TrainerChatScreenState(chatRoomId: chatRoomId, userMap: userMap);
 }
 
-class _ChatPageState extends State<ChatPage> {
-  final GlobalKey<DashChatState> _chatViewKey = GlobalKey<DashChatState>();
+class _TrainerChatScreenState extends State<TrainerChatScreen> {
+  final QueryDocumentSnapshot userMap;
+  final String chatRoomId;
+  _TrainerChatScreenState({@required this.chatRoomId, @required this.userMap});
+  final TextEditingController _message = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  final ChatUser user = ChatUser(
-    name: "Fayeed",
-    uid: "123456789",
-    avatar: "https://www.wrappixel.com/ampleadmin/assets/images/users/4.jpg",
-  );
+  File imageFile;
 
-  final ChatUser otherUser = ChatUser(
-    name: "Mrfatty",
-    uid: "25649654",
-  );
+  Future getImage() async {
+    ImagePicker _picker = ImagePicker();
 
-  List<ChatMessage> messages = <ChatMessage>[];
-  var m = <ChatMessage>[];
-
-  var i = 0;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void systemMessage() {
-    Timer(Duration(milliseconds: 300), () {
-      if (i < 6) {
-        setState(() {
-          messages = [...messages, m[i]];
-        });
-        i++;
+    await _picker.pickImage(source: ImageSource.gallery).then((xFile) {
+      if (xFile != null) {
+        imageFile = File(xFile.path);
+        uploadImage();
       }
-      Timer(Duration(milliseconds: 300), () {
-        _chatViewKey.currentState.scrollController
-          ..animateTo(
-            _chatViewKey.currentState.scrollController.position.maxScrollExtent,
-            curve: Curves.easeOut,
-            duration: const Duration(milliseconds: 300),
-          );
-      });
     });
   }
 
-  void onSend(ChatMessage message) {
-    // print(message.toJson());
-    // FirebaseFirestore.instance
-    //     .collection('messages')
-    //     .doc(DateTime.now().millisecondsSinceEpoch.toString())
-    //     .set(message.toJson());
-    /* setState(() {
-      messages = [...messages, message];
-      print(messages.length);
+  Future uploadImage() async {
+    String fileName = Uuid().v1();
+    int status = 1;
+
+    await _firestore
+        .collection('Chatroom')
+        .doc(chatRoomId)
+        .collection('chats')
+        .doc(fileName)
+        .set({
+      "sendby": _auth.currentUser.uid,
+      "message": "",
+      "type": "img",
+      "time": FieldValue.serverTimestamp(),
     });
 
-    if (i == 0) {
-      systemMessage();
-      Timer(Duration(milliseconds: 600), () {
-        systemMessage();
-      });
+    var ref =
+        FirebaseStorage.instance.ref().child('images').child("$fileName.jpg");
+
+    var uploadTask = await ref.putFile(imageFile).catchError((error) async {
+      await _firestore
+          .collection('Chatroom')
+          .doc(chatRoomId)
+          .collection('chats')
+          .doc(fileName)
+          .delete();
+
+      status = 0;
+    });
+
+    if (status == 1) {
+      String imageUrl = await uploadTask.ref.getDownloadURL();
+
+      await _firestore
+          .collection('Chatroom')
+          .doc(chatRoomId)
+          .collection('chats')
+          .doc(fileName)
+          .update({"message": imageUrl});
+    }
+  }
+
+  void onSendMessage() async {
+    if (_message.text.isNotEmpty) {
+      Map<String, dynamic> messages = {
+        "sendby": _auth.currentUser.uid,
+        "message": _message.text,
+        "type": "text",
+        "time": FieldValue.serverTimestamp(),
+      };
+
+      _message.clear();
+      await _firestore
+          .collection('Chatroom')
+          .doc(chatRoomId)
+          .collection('chats')
+          .add(messages);
     } else {
-      systemMessage();
-    } */
+      print("Enter Some Text");
+    }
   }
+
+  User user = FirebaseAuth.instance.currentUser;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: 30,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
+        backgroundColor: Colors.red,
+        title: StreamBuilder<DocumentSnapshot>(
+          stream: _firestore
+              .collection("${user.email}'s Followers")
+              .doc(userMap['email'])
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.data != null) {
+              return Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(userMap['fullname']),
+                    Text(
+                      userMap['status'],
+                      style: TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return Container();
+            }
           },
-          icon: Icon(
-            Icons.arrow_back_rounded,
-            color: Color.fromRGBO(65, 65, 67, 1),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: 35,
+              height: 35,
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(
+                  userMap['userdp'],
+                ),
+                radius: 50,
+              ),
+            ),
           ),
-        ),
-        elevation: 0,
-        backgroundColor: Colors.white,
-        title: Text(
-          'Person Name',
-          style: TextStyle(
-              fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
-        ),
+        ],
       ),
-      // body: StreamBuilder<QuerySnapshot>(
-      //   stream: FirebaseFirestore.instance
-      //       .collection('messages')
-      //       .orderBy("createdAt")
-      //       .snapshots(),
-      //   builder: (context, snapshot) {
-      //     if (!snapshot.hasData) {
-      //       return Center(
-      //         child: CircularProgressIndicator(
-      //           valueColor: AlwaysStoppedAnimation<Color>(
-      //             Theme.of(context).primaryColor,
-      //           ),
-      //         ),
-      //       );
-      //     } else {
-      //       List<DocumentSnapshot> items = snapshot.data.docs;
-      //       var messages =
-      //           items.map((i) => ChatMessage.fromJson(i.data())).toList();
-      //       return
-      body: Container(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: DashChat(
-            key: _chatViewKey,
-            inverted: false,
-            onSend: onSend,
-            sendOnEnter: true,
-            textInputAction: TextInputAction.send,
-            user: user,
-            inputDecoration: InputDecoration(
-              border: InputBorder.none,
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
-                borderSide: BorderSide(
-                  color: Color.fromRGBO(65, 65, 67, 1),
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              child: SingleChildScrollView(
+                reverse: true,
+                physics: BouncingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Text(
+                        DateFormat.jm().format(DateTime.now()).toString(),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                      child: GetMessages(chatRoomId: chatRoomId),
+                    ),
+                  ],
                 ),
               ),
-              // enabledBorder: OutlineInputBorder(
-              //   borderRadius: BorderRadius.circular(30),
-              //   borderSide: BorderSide(
-              //     color: Color.fromRGBO(65, 65, 67, 1),
-              //   ),
-              // ),
-              errorBorder: InputBorder.none,
-              disabledBorder: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 20),
-              hintText: "Message",
-              hintStyle: TextStyle(
-                color: Color.fromRGBO(118, 129, 150, 1),
-              ),
             ),
-            dateFormat: DateFormat('yyyy-MMM-dd'),
-            timeFormat: DateFormat('HH:mm'),
-            messages: messages,
-            showUserAvatar: false,
-            showAvatarForEveryMessage: false,
-            scrollToBottom: false,
-            onPressAvatar: (ChatUser user) {
-              print("OnPressAvatar: ${user.name}");
-            },
-            onLongPressAvatar: (ChatUser user) {
-              print("OnLongPressAvatar: ${user.name}");
-            },
-            inputMaxLines: 5,
-            messageContainerPadding: EdgeInsets.only(left: 5.0, right: 5.0),
-            alwaysShowSend: true,
-            inputTextStyle: TextStyle(
-              fontSize: 16.0,
-              color: Colors.black,
-            ),
-
-            onQuickReply: (Reply reply) {
-              setState(() {
-                messages.add(ChatMessage(
-                    text: reply.value, createdAt: DateTime.now(), user: user));
-                messages = [...messages];
-              });
-
-              Timer(Duration(milliseconds: 300), () {
-                _chatViewKey.currentState.scrollController
-                  ..animateTo(
-                    _chatViewKey
-                        .currentState.scrollController.position.maxScrollExtent,
-                    curve: Curves.easeOut,
-                    duration: const Duration(milliseconds: 300),
-                  );
-
-                if (i == 0) {
-                  systemMessage();
-                  Timer(Duration(milliseconds: 600), () {
-                    systemMessage();
-                  });
-                } else {
-                  systemMessage();
-                }
-              });
-            },
-            onLoadEarlier: () {
-              print("laoding...");
-            },
-            // leading: [
-            //   IconButton(
-            //     icon: Icon(
-            //       Icons.settings_outlined,
-            //       color: Colors.white,
-            //     ),
-            //     onPressed: () async {
-            //       showModalBottomSheet(
-            //         context: context,
-            //         isScrollControlled: true,
-            //         builder: (context) => SingleChildScrollView(
-            //           child: Container(
-            //             color: Colors.black,
-            //             padding: EdgeInsets.only(
-            //                 bottom: MediaQuery.of(context).viewInsets.bottom),
-            //             child: EventChat(),
-            //           ),
-            //         ),
-            //       );
-            //     },
-            //   )
-            // ],
-            shouldShowLoadEarlier: false,
-            showTraillingBeforeSend: true,
-            trailing: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.emoji_emotions,
-                  color: Color.fromRGBO(65, 65, 67, 1),
-                ),
-                onPressed: () async {
-                  // final picker = ImagePicker();
-                  // PickedFile result = await picker.getImage(
-                  //   source: ImageSource.gallery,
-                  //   imageQuality: 80,
-                  //   maxHeight: 400,
-                  //   maxWidth: 400,
-                  // );
-
-                  // if (result != null) {
-                  // final Reference storageRef =
-                  //     FirebaseStorage.instance.ref().child("chat_images");
-
-                  // final taskSnapshot = await storageRef.putFile(
-                  //   File(result.path),
-                  //   SettableMetadata(
-                  //     contentType: 'image/jpg',
-                  //   ),
-                  // );
-
-                  // String url = await taskSnapshot.ref.getDownloadURL();
-
-                  // ChatMessage message =
-                  //     ChatMessage(text: "", user: user, image: url);
-
-                  // FirebaseFirestore.instance
-                  //     .collection('messages')
-                  //     .add(message.toJson());
-                  // }
-                },
-              )
-            ],
           ),
-        ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              width: double.infinity,
+              alignment: Alignment.center,
+              padding: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.25),
+                    spreadRadius: 1,
+                    blurRadius: 1,
+                    offset: Offset(0, 0), // changes position of shadow
+                  ),
+                ],
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25),
+                  topRight: Radius.circular(25),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Flexible(
+                    fit: FlexFit.tight,
+                    child: Container(
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.25),
+                            spreadRadius: 1,
+                            blurRadius: 1,
+                            offset: Offset(0, 0), // changes position of shadow
+                          ),
+                        ],
+                        color: Colors.white,
+                      ),
+                      child: TextField(
+                        controller: _message,
+                        keyboardType: TextInputType.text,
+                        minLines: 1,
+                        maxLines: 5,
+                        decoration: InputDecoration(
+                          isDense: true,
+                          prefixIcon: IconButton(
+                            onPressed: () => getImage(),
+                            icon: Icon(
+                              Icons.camera_alt_outlined,
+                              color: Colors.red,
+                            ),
+                          ),
+                          hintText: 'Type your message',
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: onSendMessage,
+                    icon: Icon(
+                      Icons.send,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
+}
+
+class ShowImage extends StatelessWidget {
+  final String imageUrl;
+
+  const ShowImage({@required this.imageUrl, Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      body: Container(
+        height: size.height,
+        width: size.width,
+        color: Colors.black,
+        child: Image.network(imageUrl),
+      ),
+    );
+  }
+}
+
+class GetMessages extends StatefulWidget {
+  final String chatRoomId;
+  GetMessages({@required this.chatRoomId, Key key}) : super(key: key);
+
+  @override
+  _GetMessagesState createState() => _GetMessagesState(chatRoomId: chatRoomId);
+}
+
+class _GetMessagesState extends State<GetMessages> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  User user = FirebaseAuth.instance.currentUser;
+  final String chatRoomId;
+  _GetMessagesState({@required this.chatRoomId});
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _firestore
+          .collection('Chatroom')
+          .doc(chatRoomId)
+          .collection('chats')
+          .orderBy("time", descending: false)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return CircularProgressIndicator();
+        }
+        return Padding(
+          padding: EdgeInsets.symmetric(vertical: 8.0),
+          child: ListView.builder(
+            itemCount: snapshot.data.docs.length,
+            shrinkWrap: true,
+            primary: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              QueryDocumentSnapshot queryDocumentSnapshot =
+                  snapshot.data.docs[index];
+              return queryDocumentSnapshot['sendby'] != user.uid
+                  ? getReceiverView(
+                      ChatBubbleClipper3(type: BubbleType.receiverBubble),
+                      context,
+                      queryDocumentSnapshot['message'],
+                      queryDocumentSnapshot['type'])
+                  : getSenderView(
+                      ChatBubbleClipper3(type: BubbleType.sendBubble),
+                      context,
+                      queryDocumentSnapshot['message'],
+                      queryDocumentSnapshot['type']);
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  getSenderView(CustomClipper clipper, BuildContext context, String message,
+          String type) =>
+      ChatBubble(
+        clipper: clipper,
+        elevation: 0.5,
+        alignment: Alignment.topRight,
+        margin: EdgeInsets.only(top: 20),
+        backGroundColor: Colors.blue[100].withOpacity(0.5),
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.7,
+          ),
+          child: type == 'text'
+              ? Text(
+                  message,
+                  style: TextStyle(color: Colors.grey[800]),
+                )
+              : message != ''
+                  ? Container(
+                      height: 250,
+                      child: Image.network(
+                        message,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : CircularProgressIndicator(),
+        ),
+      );
+
+  getReceiverView(CustomClipper clipper, BuildContext context, String message,
+          String type) =>
+      ChatBubble(
+        clipper: clipper,
+        elevation: 0.5,
+        backGroundColor: Colors.red,
+        margin: EdgeInsets.only(top: 20),
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.7,
+          ),
+          child: type == 'text'
+              ? Text(
+                  message,
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                )
+              : message != ''
+                  ? Container(
+                      height: 150,
+                      child: Image.network(
+                        message,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : CircularProgressIndicator(),
+        ),
+      );
 }

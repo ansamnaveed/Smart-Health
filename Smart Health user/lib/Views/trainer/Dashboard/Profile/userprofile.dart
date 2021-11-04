@@ -11,7 +11,6 @@ import 'package:fluttericon/linecons_icons.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:outline_gradient_button/outline_gradient_button.dart';
 import 'package:relative_scale/relative_scale.dart';
-import 'NotificationScreen/notification.dart';
 import 'Privacypolicy.dart';
 import 'editprofile.dart';
 import 'unlockPremium/unlock.dart';
@@ -118,25 +117,6 @@ class _UserProfileState extends State<UserProfile> {
                           'About',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                      ),
-                      ListTile(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NotificationScreen(),
-                            ),
-                          );
-                        },
-                        title: Text('Notifications'),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 15,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Divider(
-                        height: 0,
                       ),
                       ListTile(
                         onTap: () {

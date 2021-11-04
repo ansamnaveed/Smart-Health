@@ -1,14 +1,13 @@
 import 'package:fireauth/Widgets/theme.dart';
+import 'package:fireauth/chat/chat/contact_list.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/linearicons_free_icons.dart';
 import 'package:fluttericon/linecons_icons.dart';
 import 'package:fluttericon/rpg_awesome_icons.dart';
 import 'package:relative_scale/relative_scale.dart';
 
-import 'Chat/chatMain.dart';
 import 'HealthTips/healthtips.dart';
 import 'Profile/userprofile.dart';
-import 'SearchScreens/search.dart';
 import 'Training/training.dart';
 
 class EndIntro extends StatefulWidget {
@@ -33,14 +32,12 @@ class _EndIntroState extends State<EndIntro> {
           body: bottomIndex == 0
               ? Training()
               : bottomIndex == 1
-                  ? Search()
+                  ? HealthTips()
                   : bottomIndex == 2
-                      ? HealthTips()
+                      ? ContactList()
                       : bottomIndex == 3
-                          ? ChatScreen()
-                          : bottomIndex == 4
-                              ? UserProfile()
-                              : Container,
+                          ? UserProfile()
+                          : Container,
           bottomNavigationBar: ClipRRect(
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(30.0),
@@ -78,7 +75,7 @@ class _EndIntroState extends State<EndIntro> {
                         });
                       },
                       icon: Icon(
-                        Linecons.search,
+                        LineariconsFree.heart_pulse,
                         color: bottomIndex == 1
                             ? Color.fromRGBO(239, 65, 54, .75)
                             : Color.fromRGBO(65, 65, 67, .75),
@@ -91,7 +88,7 @@ class _EndIntroState extends State<EndIntro> {
                         });
                       },
                       icon: Icon(
-                        LineariconsFree.heart_pulse,
+                        Linecons.comment,
                         color: bottomIndex == 2
                             ? Color.fromRGBO(239, 65, 54, .75)
                             : Color.fromRGBO(65, 65, 67, .75),
@@ -104,21 +101,8 @@ class _EndIntroState extends State<EndIntro> {
                         });
                       },
                       icon: Icon(
-                        Linecons.comment,
-                        color: bottomIndex == 3
-                            ? Color.fromRGBO(239, 65, 54, .75)
-                            : Color.fromRGBO(65, 65, 67, .75),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          bottomIndex = 4;
-                        });
-                      },
-                      icon: Icon(
                         Linecons.user,
-                        color: bottomIndex == 4
+                        color: bottomIndex == 3
                             ? Color.fromRGBO(239, 65, 54, .75)
                             : Color.fromRGBO(65, 65, 67, .75),
                       ),

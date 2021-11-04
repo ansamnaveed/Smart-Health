@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:fireauth/Views/Dashboard/Profile/userprofile.dart';
 import 'package:fireauth/Widgets/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -142,15 +141,9 @@ class _EditProfileState extends State<EditProfile> {
         .collection("${user.email}'s Account")
         .doc("Account")
         .get();
-    // DocumentSnapshot variable1 = await FirebaseFirestore.instance
-    //     .collection("${user.email}'s Account")
-    //     .doc("Trainer")
-    //     .get();
     setState(
       () {
         fileUrl = variable['imageUrl'];
-        // desc = variable1['description'];
-        // about = variable1['about'];
       },
     );
   }
@@ -170,12 +163,6 @@ class _EditProfileState extends State<EditProfile> {
             centerTitle: true,
             leading: IconButton(
               onPressed: () {
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => UserProfile(),
-                //   ),
-                // );
                 Navigator.pop(context);
               },
               icon: Icon(
@@ -193,7 +180,7 @@ class _EditProfileState extends State<EditProfile> {
                   fontWeight: FontWeight.bold),
             ),
           ),
-          body: user.email == null
+          body: fileUrl == null
               //  || password == null
               ? Center(
                   child: Icon(
@@ -277,7 +264,6 @@ class _EditProfileState extends State<EditProfile> {
                                         onPressed: () {
                                           _camImage();
                                         },
-                                        // => pickImage(ImageSource.camera),
                                         child: Row(
                                           children: [
                                             Container(

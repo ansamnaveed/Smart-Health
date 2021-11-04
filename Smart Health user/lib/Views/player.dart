@@ -34,6 +34,7 @@ class _PlayerState extends State<Player> {
               ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.red,
         onPressed: () {
           setState(
             () {
