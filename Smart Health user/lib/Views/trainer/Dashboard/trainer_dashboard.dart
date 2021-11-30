@@ -1,12 +1,11 @@
+import 'package:fireauth/Views/trainer/Dashboard/HealthTips/all_tips.dart';
 import 'package:fireauth/Widgets/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/linearicons_free_icons.dart';
 import 'package:fluttericon/linecons_icons.dart';
 import 'package:fluttericon/rpg_awesome_icons.dart';
 import 'package:relative_scale/relative_scale.dart';
-
 import 'Chat/chatMain.dart';
-import 'HealthTips/healthtips.dart';
 import 'Profile/userprofile.dart';
 import 'Training/training.dart';
 
@@ -32,9 +31,9 @@ class _TrainerDashboardState extends State<TrainerDashboard> {
           body: bottomIndex == 0
               ? Training()
               : bottomIndex == 1
-                  ? HealthTips()
+                  ? AllTips()
                   : bottomIndex == 2
-                      ? ChatScreen()
+                      ? TrainerContactList()
                       : bottomIndex == 3
                           ? UserProfile()
                           : Container,

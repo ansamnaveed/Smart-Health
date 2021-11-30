@@ -292,7 +292,8 @@ class _SignUpState extends State<SignUp> {
                                       'imageUrl': 'null',
                                       'firstname': fnameController.text,
                                       'lastname': lnameController.text,
-                                      'role': 'trainee'
+                                      'role': 'trainee',
+                                      'status':'',
                                     },
                                   );
                                   if (User == null) {

@@ -5,15 +5,19 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fireauth/Widgets/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttericon/entypo_icons.dart';
+import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:fluttericon/linecons_icons.dart';
+import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:outline_gradient_button/outline_gradient_button.dart';
 import 'package:path/path.dart' as p;
 import 'package:firebase_storage/firebase_storage.dart' as storage;
-import 'package:fireauth/Views/Dashboard/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
+
+import '../trainer_dashboard.dart';
 
 class NewWorkout extends StatefulWidget {
   const NewWorkout({Key key}) : super(key: key);
@@ -42,6 +46,10 @@ class _NewWorkoutState extends State<NewWorkout> {
       );
       if (file == null) {
         return;
+      } else {
+        setState(() {
+          tap2 = true;
+        });
       }
 
       file = await compressImage(file.path, 35);
@@ -53,6 +61,7 @@ class _NewWorkoutState extends State<NewWorkout> {
   }
 
   bool tap = false;
+  bool tap2 = false;
 
   Future _camVideo() async {
     try {
@@ -89,6 +98,10 @@ class _NewWorkoutState extends State<NewWorkout> {
       );
       if (file == null) {
         return;
+      } else {
+        setState(() {
+          tap2 = true;
+        });
       }
 
       file = await compressImage(file.path, 35);
@@ -181,7 +194,7 @@ class _NewWorkoutState extends State<NewWorkout> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => EndIntro(),
+                builder: (context) => TrainerDashboard(),
               ),
             );
           },
@@ -192,7 +205,7 @@ class _NewWorkoutState extends State<NewWorkout> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Expanded(
+        child: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -356,8 +369,8 @@ class _NewWorkoutState extends State<NewWorkout> {
                               TextButton(
                                 onPressed: () {
                                   _camImage();
+                                  Navigator.pop(context);
                                 },
-                                // => pickImage(ImageSource.camera),
                                 child: Row(
                                   children: [
                                     Container(
@@ -390,6 +403,7 @@ class _NewWorkoutState extends State<NewWorkout> {
                               TextButton(
                                 onPressed: () {
                                   _galleryImage();
+                                  Navigator.pop(context);
                                 },
                                 child: Row(
                                   children: [
@@ -415,41 +429,6 @@ class _NewWorkoutState extends State<NewWorkout> {
                                     ),
                                     Text(
                                       'Select from gallery',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    fileUrl = 'null';
-                                  });
-                                },
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      margin: EdgeInsets.only(right: 20),
-                                      width: 50,
-                                      height: 50,
-                                      decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: <Color>[
-                                              Color.fromRGBO(65, 65, 67, 1),
-                                              Color.fromRGBO(239, 66, 54, 1),
-                                            ],
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(50)),
-                                      child: Icon(
-                                        Linecons.photo,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Remove Photo',
                                       style: TextStyle(color: Colors.black),
                                     ),
                                   ],
@@ -487,8 +466,18 @@ class _NewWorkoutState extends State<NewWorkout> {
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.add_a_photo_rounded),
-                              Text('No thumbnail selected')
+                              tap2 == false
+                                  ? Icon(Icons.add_a_photo_rounded)
+                                  : Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                              tap2 == false
+                                  ? Text('No thumbnail selected')
+                                  : Text('Uploading....')
                             ],
                           ),
                   ),
@@ -672,57 +661,129 @@ class _NewWorkoutState extends State<NewWorkout> {
     final String duration = durationController.text.trim();
     final String thumbUrl = fileUrl;
     final String workoutUrl = excercise;
-    // DocumentSnapshot userName = await FirebaseFirestore.instance
-    //     .collection(user.email)
-    //     .doc("Workouts")
-    //     .get();
-    // String firstname = userName['firstname'];
-    // DocumentSnapshot docFromFname = await FirebaseFirestore.instance
-    //     .collection(user.email)
-    //     .doc("$docNumber")
-    //     .get();
-    // if (docNumber == null) {
-    //   setState(() {
-    //     docNumber = 0;
-    //   });
-    // } else {
-    //   setState(() {
-    //     docNumber = docFromFname['docNumber'];
-    //   });
-    // }
+
     String date = DateTime.now().toString();
-    await FirebaseFirestore.instance
-        .collection("${user.email}'s Workouts")
-        .doc(date)
-        .set(
-      {
-        'name': name,
-        'description': description,
-        'duration': duration,
-        'thumbUrl': thumbUrl,
-        'workOutUrl': workoutUrl,
-        'Date&Time': date
-      },
-    ).then((value) async {
-      await FirebaseFirestore.instance
-          .collection("All Workouts")
-          .doc(date)
-          .set({
-        'uploader': user.email,
-        'name': name,
-        'description': description,
-        'duration': duration,
-        'thumbUrl': thumbUrl,
-        'workOutUrl': workoutUrl,
-        'Date&Time': date
-      });
-    }).then(
-      (value) => Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EndIntro(),
+    if (name == '' ||
+        description == '' ||
+        duration == '' ||
+        thumbUrl == '' ||
+        workoutUrl == '') {
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          contentPadding: EdgeInsets.all(20),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(20),
+            ),
+          ),
+          // contentPadding: EdgeInsets.all(0),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: <Color>[
+                      Color.fromRGBO(65, 65, 67, 1),
+                      Color.fromRGBO(239, 66, 54, .75),
+                    ],
+                  ),
+                ),
+                child: Center(
+                  child: Icon(
+                    FontAwesome5.exclamation,
+                    color: Colors.white,
+                    size: 40,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0),
+                child: Text(
+                  'Please fill out all feilds.',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+              OutlineGradientButton(
+                padding: EdgeInsets.zero,
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                elevation: 5,
+                radius: Radius.circular(10),
+                backgroundColor: Colors.white,
+                child: Container(
+                  width: MediaQuery.of(context).size.width / 3.5,
+                  height: 30,
+                  alignment: Alignment.center,
+                  child: GradientText(
+                    'Ok',
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: <Color>[
+                        Color.fromRGBO(65, 65, 67, 1),
+                        Color.fromRGBO(239, 66, 54, 1),
+                      ],
+                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[
+                    Color.fromRGBO(65, 65, 67, 1),
+                    Color.fromRGBO(239, 66, 54, 1),
+                  ],
+                ),
+                strokeWidth: 2,
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      await FirebaseFirestore.instance
+          .collection("${user.email}'s Workouts")
+          .doc(date)
+          .set(
+        {
+          'name': name,
+          'description': description,
+          'duration': duration,
+          'thumbUrl': thumbUrl,
+          'workOutUrl': workoutUrl,
+          'Date&Time': date
+        },
+      ).then((value) async {
+        await FirebaseFirestore.instance
+            .collection("All Workouts")
+            .doc(date)
+            .set({
+          'uploader': user.email,
+          'name': name,
+          'description': description,
+          'duration': duration,
+          'thumbUrl': thumbUrl,
+          'workOutUrl': workoutUrl,
+          'Date&Time': date
+        });
+      }).then(
+        (value) => Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TrainerDashboard(),
+          ),
+        ),
+      );
+      Navigator.pop(context);
+    }
   }
 }

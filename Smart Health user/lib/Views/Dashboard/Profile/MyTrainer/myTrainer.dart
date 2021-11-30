@@ -20,7 +20,8 @@ class _MyTrainerState extends State<MyTrainer> {
     return RelativeBuilder(
       builder: (context, heigh, width, sy, sx) {
         return Scaffold(
-          appBar: AppBar(
+          appBar: 
+          AppBar(
             centerTitle: true,
             leading: IconButton(
               onPressed: () {
@@ -41,7 +42,8 @@ class _MyTrainerState extends State<MyTrainer> {
                   fontWeight: FontWeight.bold),
             ),
           ),
-          body: StreamBuilder(
+          body: 
+          StreamBuilder(
             stream: _productss.snapshots(),
             builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
               if (streamSnapshot.hasData) {
